@@ -1,0 +1,12 @@
+# Netlify build settings for the BeaverCodes Next.js site.
+# Netlify detects Next.js and adds its Next.js runtime automatically: pages are
+# served from its CDN, /api/contact runs as a serverless function, and the
+# headers in next.config.ts (long caching for /models, /hdr) are applied.
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+  NEXT_TELEMETRY_DISABLED = "1"
