@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { AnimatePresence, motion, useMotionValue, useSpring } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import RevealText from "./RevealText";
 import MagneticButton, { Arrow } from "./MagneticButton";
+import { SocialIcon, SocialRow } from "./Socials";
 import { cn } from "@/utils/math";
+import { SITE } from "@/utils/site";
 
 const PROJECT_TYPES = ["Web Development", "Software Development", "Mobile App", "Digital Marketing", "Not sure yet"];
 
@@ -29,14 +31,14 @@ function Field({
   autoComplete?: string;
 }) {
   const shared =
-    "peer w-full resize-none border-0 border-b bg-transparent px-0 pb-3 pt-7 text-lg text-cream placeholder-transparent outline-none transition-colors duration-500 focus:ring-0";
+    "peer w-full resize-none border-0 border-b bg-transparent px-0 pb-2.5 pt-6 text-base text-cream placeholder-transparent outline-none transition-colors duration-500 focus:ring-0 md:text-lg";
   return (
     <div className="group relative">
       {textarea ? (
         <textarea
           id={id}
           name={id}
-          rows={4}
+          rows={3}
           placeholder={label}
           required={required}
           aria-invalid={!!error}
@@ -58,7 +60,7 @@ function Field({
       )}
       <label
         htmlFor={id}
-        className="pointer-events-none absolute left-0 top-1 text-xs uppercase tracking-[0.18em] text-mute transition-all duration-300 peer-placeholder-shown:top-7 peer-placeholder-shown:text-lg peer-placeholder-shown:normal-case peer-placeholder-shown:tracking-normal peer-focus:top-1 peer-focus:text-xs peer-focus:uppercase peer-focus:tracking-[0.18em] peer-focus:text-ember"
+        className="pointer-events-none absolute left-0 top-0.5 text-xs uppercase tracking-[0.18em] text-mute transition-all duration-300 peer-placeholder-shown:top-6 peer-placeholder-shown:text-base peer-placeholder-shown:normal-case peer-placeholder-shown:tracking-normal peer-focus:top-0.5 peer-focus:text-xs peer-focus:uppercase peer-focus:tracking-[0.18em] peer-focus:text-ember md:peer-placeholder-shown:text-lg"
       >
         {label}
         {required && <span className="text-ember"> *</span>}
@@ -73,40 +75,6 @@ function Field({
         </p>
       )}
     </div>
-  );
-}
-
-/** Large circular magnetic call-to-action that jumps to the form. */
-function RoundCTA() {
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const sx = useSpring(x, { stiffness: 180, damping: 16 });
-  const sy = useSpring(y, { stiffness: 180, damping: 16 });
-  return (
-    <motion.a
-      href="#contact-form"
-      style={{ x: sx, y: sy }}
-      onPointerMove={(e) => {
-        if (e.pointerType !== "mouse") return;
-        const r = e.currentTarget.getBoundingClientRect();
-        x.set((e.clientX - (r.left + r.width / 2)) * 0.4);
-        y.set((e.clientY - (r.top + r.height / 2)) * 0.4);
-      }}
-      onPointerLeave={() => {
-        x.set(0);
-        y.set(0);
-      }}
-      data-cursor="hover"
-      className="group relative flex h-[clamp(9rem,13vw,13rem)] w-[clamp(9rem,13vw,13rem)] items-center justify-center overflow-hidden rounded-full bg-ember text-ink"
-    >
-      <span className="absolute inset-0 scale-0 rounded-full bg-cream transition-transform duration-700 ease-[var(--ease-out-expo)] group-hover:scale-100" />
-      <span className="relative flex flex-col items-center gap-1 text-center font-semibold leading-tight">
-        Let&apos;s talk
-        <svg viewBox="0 0 24 24" className="h-5 w-5 transition-transform duration-500 group-hover:rotate-45" aria-hidden>
-          <path d="M7 17L17 7M9 7h8v8" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </span>
-    </motion.a>
   );
 }
 
@@ -142,52 +110,57 @@ export default function Contact() {
   }
 
   return (
-    <section id="contact" className="relative overflow-hidden bg-coal py-[clamp(6rem,14vw,12rem)]">
+    // Compact contact: headline, intro and email on the left; the form on the right.
+    <section id="contact" className="relative overflow-hidden bg-coal py-[clamp(4.5rem,9vw,8rem)]">
       <div
         aria-hidden
-        className="absolute -right-[20vw] -top-[20vh] h-[80vh] w-[60vw] rounded-full blur-[140px]"
-        style={{ background: "radial-gradient(closest-side, rgba(255,122,26,0.22), transparent)" }}
+        className="pointer-events-none absolute -right-[15vw] -top-[15vh] h-[60vh] w-[50vw] rounded-full"
+        style={{ background: "radial-gradient(closest-side, rgba(255,122,26,0.16), transparent)" }}
       />
-      <div className="container-x relative">
-        <p className="eyebrow mb-8 flex items-center gap-3">
-          <span className="text-ember">(06)</span>
-          <span className="h-px w-10 bg-cream/20" />
-          Contact
-        </p>
-        <div className="relative">
+      <div className="container-x relative grid gap-12 lg:grid-cols-12 lg:gap-16">
+        <aside className="lg:col-span-5">
+          <p className="eyebrow mb-8 flex items-center gap-3">
+            <span className="text-ember">(06)</span>
+            <span className="h-px w-10 bg-cream/20" />
+            Contact
+          </p>
           <RevealText
-            className="text-[clamp(3rem,9vw,11rem)] font-extrabold leading-[0.88] tracking-[-0.05em]"
+            className="text-[clamp(2.4rem,4.8vw,4.5rem)] font-extrabold leading-[0.98] tracking-[-0.04em]"
             lines={[
-              "Let's Build",
-              <span key="l2" className="block md:pl-[8vw]">
-                Something <em className="font-serif font-normal italic tracking-[-0.02em] text-ember">Great</em>
-              </span>,
-              "Together.",
+              "Let's build",
+              <>
+                something <em className="not-italic text-ember">great.</em>
+              </>,
             ]}
           />
-          <div className="mt-10 md:absolute md:bottom-[2%] md:right-0 md:mt-0">
-            <RoundCTA />
+          <p className="mt-6 max-w-sm text-mute md:text-lg">
+            Tell us where your business is and where you want it to go. We&apos;ll reply with ideas, a plan and an honest estimate.
+          </p>
+          <div className="mt-8 space-y-1.5">
+            <p className="eyebrow">Email</p>
+            <a href="mailto:hello@beavercodes.com" className="text-xl font-semibold underline-offset-8 hover:text-ember hover:underline md:text-2xl">
+              hello@beavercodes.com
+            </a>
           </div>
-        </div>
+          <div className="mt-6 space-y-1.5">
+            <p className="eyebrow">WhatsApp</p>
+            <a
+              href={SITE.whatsapp}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2.5 text-xl font-semibold underline-offset-8 hover:text-ember hover:underline md:text-2xl"
+            >
+              <SocialIcon name="WhatsApp" className="h-6 w-6 text-ember" />
+              {SITE.phone}
+            </a>
+          </div>
+          <div className="mt-8">
+            <p className="eyebrow mb-3">Follow us</p>
+            <SocialRow />
+          </div>
+        </aside>
 
-        <div className="mt-20 grid gap-16 lg:grid-cols-12">
-          <aside className="space-y-10 lg:col-span-4">
-            <p className="max-w-sm text-lg text-mute">
-              Tell us where your business is today and where you want it to go. We&apos;ll come back with ideas, a plan and an honest estimate.
-            </p>
-            <div className="space-y-2">
-              <p className="eyebrow">Email</p>
-              <a href="mailto:hello@beavercodes.com" className="text-2xl font-semibold underline-offset-8 hover:text-ember hover:underline">
-                hello@beavercodes.com
-              </a>
-            </div>
-            <div className="space-y-2">
-              <p className="eyebrow">Services</p>
-              <p className="text-cream/80">Web · Software · Mobile · Marketing</p>
-            </div>
-          </aside>
-
-          <div id="contact-form" className="scroll-mt-28 lg:col-span-8">
+        <div id="contact-form" className="scroll-mt-28 lg:col-span-7 lg:pt-14">
             <AnimatePresence mode="wait">
               {status === "sent" ? (
                 <motion.div
@@ -195,7 +168,7 @@ export default function Contact() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
-                  className="flex min-h-[420px] flex-col items-start justify-center gap-6 rounded-[28px] border border-ember/30 bg-ink/50 p-10"
+                  className="flex min-h-[320px] flex-col items-start justify-center gap-5 rounded-[28px] border border-ember/30 bg-ink/50 p-8 md:p-10"
                   role="status"
                 >
                   <span className="flex h-14 w-14 items-center justify-center rounded-full bg-ember text-ink">
@@ -217,13 +190,10 @@ export default function Contact() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="grid gap-x-10 gap-y-8 md:grid-cols-2"
+                  className="grid gap-x-8 gap-y-6 md:grid-cols-2"
                 >
                   <Field id="name" label="Name" required error={errors.name} autoComplete="name" />
                   <Field id="email" label="Email" type="email" required error={errors.email} autoComplete="email" />
-                  <div className="md:col-span-2">
-                    <Field id="company" label="Company" autoComplete="organization" />
-                  </div>
 
                   <fieldset className="md:col-span-2">
                     <legend className="mb-4 text-xs uppercase tracking-[0.18em] text-mute">Project Type</legend>
@@ -269,7 +239,7 @@ export default function Contact() {
 
                   <div className="flex flex-wrap items-center gap-6 md:col-span-2">
                     <MagneticButton type="submit" disabled={status === "sending"}>
-                      {status === "sending" ? "Sending…" : "Let's Build Something Great Together"} <Arrow />
+                      {status === "sending" ? "Sending…" : "Send message"} <Arrow />
                     </MagneticButton>
                     {status === "error" && (
                       <p className="text-sm text-red-300" role="alert">
@@ -280,7 +250,6 @@ export default function Contact() {
                 </motion.form>
               )}
             </AnimatePresence>
-          </div>
         </div>
       </div>
     </section>

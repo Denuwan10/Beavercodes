@@ -113,7 +113,7 @@ export default function Preloader() {
           {/* Centre: headline + bar */}
           <div className="absolute inset-0 flex items-center justify-center px-[var(--gutter)]">
             <motion.div className="flex w-[min(40rem,100%)] flex-col" exit={{ opacity: 0, y: -16 }} transition={{ duration: 0.6, ease: EASE }}>
-              <h2 className="text-center text-[clamp(2.75rem,8vw,6.5rem)] font-semibold leading-[0.95] tracking-[-0.045em]">
+              <p className="text-center text-[clamp(2.75rem,8vw,6.5rem)] font-semibold leading-[0.95] tracking-[-0.045em]">
                 {["Ready", "To"].map((w, i) => (
                   <span key={w} className="inline-block overflow-hidden pb-[0.08em] align-bottom">
                     <motion.span
@@ -128,7 +128,7 @@ export default function Preloader() {
                 ))}
                 <span className="inline-block overflow-hidden pb-[0.08em] align-bottom">
                   <motion.em
-                    className="inline-block pr-[0.06em] font-serif font-normal italic tracking-[-0.01em] text-ember"
+                    className="inline-block not-italic text-ember"
                     initial={{ y: "110%" }}
                     animate={{ y: 0 }}
                     transition={{ duration: 1, delay: 0.26, ease: EASE }}
@@ -136,7 +136,7 @@ export default function Preloader() {
                     Build
                   </motion.em>
                 </span>
-              </h2>
+              </p>
 
               <motion.div
                 className="mt-[clamp(2rem,6vh,3.5rem)]"

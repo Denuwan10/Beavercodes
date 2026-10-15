@@ -20,7 +20,8 @@ import {
   SRGBColorSpace,
   Vector3,
 } from "three";
-import { BEAVER } from "@/utils/sceneLayout";
+import { BEAVER, DESK } from "@/utils/sceneLayout";
+import PremiumKeyboard from "./PremiumKeyboard";
 import { BEAVER_MODEL } from "@/utils/beaverConfig";
 import { experience } from "@/utils/store";
 import { sceneState } from "@/utils/sceneState";
@@ -320,12 +321,29 @@ function GLTFBeaver({ shadows }: { shadows: boolean }) {
 
   const [ox, oy, oz] = BEAVER_MODEL.fit.offset;
   const { pivot, scale } = prepared;
+  const rootY = BEAVER.position.y + oy;
+
+  // Keyboard: built around the keyboard baked into the mesh (see beaverConfig).
+  // Model-space measurements → this group's space using the static fit (not the
+  // breathing/sway on `character`). It stands on the desk and reaches up to the
+  // measured key-top height.
+  const KB = BEAVER_MODEL.keyboard;
+  const kbLocal = new Vector3(KB.center[0] - pivot.x, 0, KB.center[1] - pivot.z)
+    .multiplyScalar(scale)
+    .applyAxisAngle(new Vector3(0, 1, 0), BEAVER_MODEL.fit.yaw);
+  const kbTopWorld = rootY + (KB.top - pivot.y) * scale;
+  const kbHeight = Math.max(0.02, kbTopWorld - DESK.top);
 
   return (
-    <group position={[BEAVER.position.x + ox, BEAVER.position.y + oy, BEAVER.position.z + oz]}>
+    <group position={[BEAVER.position.x + ox, rootY, BEAVER.position.z + oz]}>
       <group ref={character} rotation={[0, BEAVER_MODEL.fit.yaw, 0]} scale={scale}>
         <primitive object={scene} position={[-pivot.x, -pivot.y, -pivot.z]} />
       </group>
+      {KB.enabled && (
+        <group position={[kbLocal.x, DESK.top - rootY, kbLocal.z]} rotation={[0, BEAVER_MODEL.fit.yaw + KB.yaw, 0]}>
+          <PremiumKeyboard shadows={shadows} width={KB.size[0] * scale} depth={KB.size[1] * scale} height={kbHeight} />
+        </group>
+      )}
     </group>
   );
 }

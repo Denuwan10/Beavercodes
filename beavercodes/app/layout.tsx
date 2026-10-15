@@ -1,32 +1,50 @@
 import type { Metadata, Viewport } from "next";
-import { Manrope, Instrument_Serif, JetBrains_Mono } from "next/font/google";
+import { Manrope, JetBrains_Mono } from "next/font/google";
 import SmoothScroll from "@/components/SmoothScroll";
 import Cursor from "@/components/Cursor";
+import { SITE } from "@/utils/site";
 import "./globals.css";
 
 const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope", display: "swap" });
-const instrument = Instrument_Serif({
-  subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
-  variable: "--font-instrument",
-  display: "swap",
-});
 const jetbrains = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains", display: "swap" });
 
+const TITLE = "BeaverCodes — Web, Software & Mobile App Development Agency";
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://beavercodes.com"),
-  title: "BeaverCodes — Build • Develop • Grow",
-  description:
-    "BeaverCodes builds websites, software, mobile apps and digital marketing that help businesses grow.",
+  metadataBase: new URL(SITE.url),
+  title: { default: TITLE, template: `%s | ${SITE.name}` },
+  description: SITE.description,
+  keywords: [...SITE.keywords],
+  applicationName: SITE.name,
+  authors: [{ name: SITE.name, url: SITE.url }],
+  creator: SITE.name,
+  publisher: SITE.name,
+  category: "technology",
+  alternates: { canonical: "/" },
   openGraph: {
-    title: "BeaverCodes — Build • Develop • Grow",
-    description: "A digital workshop crafting websites, software and apps that create real business impact.",
     type: "website",
+    url: "/",
+    siteName: SITE.name,
+    locale: "en_US",
+    title: TITLE,
+    description: SITE.description,
   },
   // Icons and the share image come from app/icon.png, app/apple-icon.png and
   // app/opengraph-image.png (built from the mascot logo in public/brand/).
-  twitter: { card: "summary_large_image" },
+  twitter: { card: "summary_large_image", title: TITLE, description: SITE.description },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 },
+  },
+  // Paste the code from Google Search Console / Bing Webmaster Tools here
+  // (or set the env vars) to verify ownership.
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+    other: process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION
+      ? { "msvalidate.01": process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION }
+      : undefined,
+  },
 };
 
 export const viewport: Viewport = {
@@ -35,13 +53,18 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+/**
+ * `modal` is a parallel route slot: a project opened from a portfolio card
+ * renders there, over the still-mounted home page (see app/@modal).
+ */
+export default function RootLayout({ children, modal }: { children: React.ReactNode; modal: React.ReactNode }) {
   return (
-    <html lang="en" className={`${manrope.variable} ${instrument.variable} ${jetbrains.variable}`}>
+    <html lang="en" className={`${manrope.variable} ${jetbrains.variable}`}>
       <body className="grain font-sans">
         <SmoothScroll>
           <Cursor />
           {children}
+          {modal}
         </SmoothScroll>
       </body>
     </html>

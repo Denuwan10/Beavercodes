@@ -288,7 +288,7 @@ export default function Services() {
             >
               <div
                 data-service-inner
-                className="group/card relative grid h-full origin-top overflow-hidden rounded-[32px] border border-cream/10 bg-coal will-change-transform lg:grid-cols-2"
+                className="group/card relative grid h-full origin-top overflow-hidden pop-card pop-card-fill rounded-[32px] will-change-transform lg:grid-cols-2"
                 onPointerMove={(e) => {
                   const r = e.currentTarget.getBoundingClientRect();
                   e.currentTarget.style.setProperty("--mx", `${e.clientX - r.left}px`);
@@ -310,7 +310,7 @@ export default function Services() {
                   <h3 className="mt-10 text-[clamp(2.4rem,4.6vw,4.8rem)] font-extrabold leading-[0.92] tracking-[-0.04em] lg:mt-auto">
                     {s.title}
                   </h3>
-                  <p className="mt-5 font-serif text-[clamp(1.4rem,2vw,2rem)] italic leading-tight text-amber">{s.lead}</p>
+                  <p className="mt-5 text-[clamp(1.25rem,1.8vw,1.75rem)] font-medium leading-snug tracking-tight text-amber">{s.lead}</p>
                   <p className="mt-4 max-w-md text-lg text-mute">{s.text}</p>
                   <ul className="mt-8 grid max-w-md grid-cols-2 gap-x-6 gap-y-3 border-t border-cream/10 pt-6">
                     {s.deliverables.map((d) => (

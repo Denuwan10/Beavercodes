@@ -37,8 +37,10 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     gsap.ticker.add(tick);
     gsap.ticker.lagSmoothing(0);
 
-    // Hold the page until the preloader has finished.
-    if (!experience.get().loaded) instance.stop();
+    // Hold the home page until the preloader has finished. Other pages (the
+    // project pages) have no preloader, so they scroll straight away.
+    const home = window.location.pathname === "/";
+    if (home && !experience.get().loaded) instance.stop();
     const unsub = experience.subscribe(() => {
       if (experience.get().loaded && instance.isStopped) instance.start();
     });

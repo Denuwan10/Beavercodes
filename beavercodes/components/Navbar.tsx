@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Logo from "./Logo";
 import MagneticButton, { Arrow } from "./MagneticButton";
+import { SocialRow } from "./Socials";
 import { scrollToTarget, useLenis } from "@/hooks/useLenis";
 import { experience, STORY, useExperience } from "@/utils/store";
 import { cn } from "@/utils/math";
@@ -38,25 +39,24 @@ export default function Navbar() {
 
   // Highlight the section in view.
   useEffect(() => {
+    // Active = the last section whose top has passed 40% of the viewport. At
+    // the very bottom the last link wins: Contact is short and sits above the
+    // footer, so it can never reach the middle of the screen on its own.
     const ids = LINKS.slice(1).map((l) => l.id);
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => e.isIntersecting && setActiveId(e.target.id));
-      },
-      { rootMargin: "-45% 0px -50% 0px" },
-    );
-    ids.forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) io.observe(el);
-    });
-    const onTop = () => {
-      if (window.scrollY < (experience.get().landingY || 0) + window.innerHeight * 0.5) setActiveId("home");
+    const onScroll = () => {
+      const vh = window.innerHeight;
+      if (window.scrollY < (experience.get().landingY || 0) + vh * 0.5) return setActiveId("home");
+      if (window.scrollY + vh >= document.documentElement.scrollHeight - 4) return setActiveId(ids[ids.length - 1]);
+      let current = "home";
+      for (const id of ids) {
+        const el = document.getElementById(id);
+        if (el && el.getBoundingClientRect().top <= vh * 0.4) current = id;
+      }
+      setActiveId(current);
     };
-    window.addEventListener("scroll", onTop, { passive: true });
-    return () => {
-      io.disconnect();
-      window.removeEventListener("scroll", onTop);
-    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   useEffect(() => {
@@ -64,6 +64,32 @@ export default function Navbar() {
     if (open) lenis.stop();
     else if (experience.get().loaded) lenis.start();
   }, [open, lenis]);
+
+  // Arriving from another page with "/?section=<id>" (a query, not a #hash,
+  // so the browser doesn't jump before the intro is ready): once the
+  // preloader is done, jump to that section. A jump, not a glide — gliding
+  // would play the whole 3D intro on the way. ("?work=<slug>", a specific
+  // project card, is handled by Portfolio.)
+  useEffect(() => {
+    if (!loaded || !lenis) return;
+    const id = new URLSearchParams(window.location.search).get("section");
+    const el = id ? document.getElementById(id) : null;
+    if (!el) return;
+    const t = window.setTimeout(() => {
+      lenis.scrollTo(el, { immediate: true, force: true, offset: -10 });
+      // Keep history.state (Next.js router state lives there).
+      window.history.replaceState(window.history.state, "", window.location.pathname);
+    }, 250);
+    return () => window.clearTimeout(t);
+  }, [loaded, lenis]);
+
+  // Escape closes the menu.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
 
   const go = (id: string) => (e: React.MouseEvent) => {
     e.preventDefault();
@@ -130,6 +156,7 @@ export default function Navbar() {
                   className="relative flex h-11 w-11 items-center justify-center rounded-full border border-cream/20 lg:hidden"
                   aria-label={open ? "Close menu" : "Open menu"}
                   aria-expanded={open}
+                  aria-controls="mobile-menu"
                 >
                   <span className={cn("absolute h-px w-5 bg-cream transition-transform duration-500", open ? "rotate-45" : "-translate-y-1")} />
                   <span className={cn("absolute h-px w-5 bg-cream transition-transform duration-500", open ? "-rotate-45" : "translate-y-1")} />
@@ -151,36 +178,78 @@ export default function Navbar() {
         </nav>
       </motion.header>
 
-      {/* Mobile / tablet menu */}
+      {/* Mobile / tablet menu: a plain list right under the header — big tap
+          rows, the current section highlighted, and the main action at the
+          bottom within thumb reach. */}
       <AnimatePresence>
         {open && (
           <motion.div
-            className="fixed inset-0 z-40 flex flex-col justify-end bg-ink/95 px-[var(--gutter)] pb-12 pt-28 backdrop-blur-xl lg:hidden"
-            initial={{ clipPath: "inset(0 0 100% 0)" }}
-            animate={{ clipPath: "inset(0 0 0% 0)" }}
-            exit={{ clipPath: "inset(0 0 100% 0)" }}
-            transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
+            id="mobile-menu"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Menu"
+            className="fixed inset-0 z-40 flex flex-col overflow-y-auto bg-ink px-[var(--gutter)] pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-24 lg:hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
           >
-            <ul className="flex flex-col gap-2">
-              {LINKS.map((l, i) => (
-                <li key={l.id} className="overflow-hidden">
-                  <motion.a
-                    href={`#${l.id}`}
-                    onClick={go(l.id)}
-                    initial={{ y: "100%" }}
-                    animate={{ y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.25 + i * 0.06, ease: [0.16, 1, 0.3, 1] }}
-                    className="flex items-baseline gap-4 text-[clamp(2.6rem,11vw,5rem)] font-extrabold leading-[1.05] tracking-tight"
+            <ul className="border-t border-cream/10">
+              {LINKS.map((l, i) => {
+                const active = activeId === l.id;
+                return (
+                  <motion.li
+                    key={l.id}
+                    className="border-b border-cream/10"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.45, delay: 0.05 + i * 0.045, ease: [0.16, 1, 0.3, 1] }}
                   >
-                    <span className="eyebrow text-ember">0{i + 1}</span>
-                    {l.label}
-                  </motion.a>
-                </li>
-              ))}
+                    <a
+                      href={`#${l.id}`}
+                      onClick={go(l.id)}
+                      aria-current={active ? "location" : undefined}
+                      className={cn(
+                        "group flex items-center gap-4 py-4 text-[1.75rem] font-bold leading-tight tracking-tight transition-colors duration-200",
+                        active ? "text-ember" : "text-cream active:text-ember",
+                      )}
+                    >
+                      <span className={cn("w-6 font-mono text-xs", active ? "text-ember" : "text-mute")}>
+                        0{i + 1}
+                      </span>
+                      <span className="flex-1">{l.label}</span>
+                      <Arrow
+                        className={cn(
+                          "h-5 w-5 transition-transform duration-200 group-active:translate-x-1",
+                          active ? "text-ember" : "text-cream/35",
+                        )}
+                      />
+                    </a>
+                  </motion.li>
+                );
+              })}
             </ul>
-            <a href="mailto:hello@beavercodes.com" className="mt-10 text-mute underline-offset-4 hover:underline">
-              hello@beavercodes.com
-            </a>
+
+            <motion.div
+              className="mt-auto space-y-5 pt-10"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <a
+                href="#contact"
+                onClick={go("contact")}
+                className="flex w-full items-center justify-center gap-2 rounded-full bg-ember px-6 py-4 text-base font-semibold text-paper transition-colors active:bg-ember-deep"
+              >
+                Start a project <Arrow />
+              </a>
+              <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-4 text-sm text-mute">
+                <a href="mailto:hello@beavercodes.com" className="underline-offset-4 hover:underline">
+                  hello@beavercodes.com
+                </a>
+                <SocialRow />
+              </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

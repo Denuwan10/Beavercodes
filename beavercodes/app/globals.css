@@ -14,9 +14,13 @@
   --color-ember: #ff7a1a;
   --color-amber: #ffb35c;
   --color-bark: #7a4a2b;
+  --color-ember-deep: #d9560a;
+  /* Light text for orange buttons. */
+  --color-paper: #f2ebe1;
 
   --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
-  --font-serif: var(--font-instrument), ui-serif, Georgia, serif;
+  /* No decorative serif: anything still asking for `font-serif` gets the clean sans. */
+  --font-serif: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, monospace;
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -77,6 +81,41 @@ body {
   80% { transform: translate3d(36px, 36px, 0); }
 }
 
+/* Process steps — "pop" when a step becomes active (replays each time the
+   .is-active class is added, since the animation is only set while it's there). */
+/* Scale only: the node is centred with Tailwind's `translate` property, which
+   combines with `transform` rather than being replaced by it. */
+@keyframes step-node-pop {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.9); }
+  100% { transform: scale(1.35); }
+}
+@keyframes step-ring {
+  0% { transform: scale(1); opacity: 0.9; }
+  100% { transform: scale(4.2); opacity: 0; }
+}
+@keyframes step-number-pop {
+  0% { transform: scale(0.94); }
+  50% { transform: scale(1.07); }
+  100% { transform: scale(1); }
+}
+/* The whole step block springs up as it becomes active. */
+@keyframes step-block-pop {
+  0% { transform: scale(0.94); }
+  55% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+/* Warm glow behind the active step: blooms in, then breathes. */
+@keyframes step-halo-in {
+  0% { opacity: 0; transform: scale(0.6); }
+  60% { opacity: 1; transform: scale(1.08); }
+  100% { opacity: 0.85; transform: scale(1); }
+}
+@keyframes step-halo-breathe {
+  0%, 100% { opacity: 0.85; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.94); }
+}
+
 /* Preloader — compositor-only animations, so they keep moving even while the
    3D scene compiles its shaders on the main thread. */
 @keyframes preload-fill {
@@ -118,11 +157,36 @@ body {
   border-color: var(--color-line);
 }
 
+/* Raised card surface (Services cards, Portfolio previews). On the dark page a
+   card only a shade lighter than the background disappears, so it gets a
+   lifted fill, a brighter edge, a lit top rim and a soft warm glow. */
+.pop-card {
+  border: 1px solid rgb(242 235 225 / 0.16);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.08),
+    0 0 0 1px rgb(0 0 0 / 0.6),
+    0 40px 90px -30px rgb(0 0 0 / 0.9),
+    0 0 80px -20px rgb(255 122 26 / 0.18);
+}
+/* Lit top edge: an ember-warm hairline that fades out at the sides. */
+.pop-card::before {
+  content: "";
+  position: absolute;
+  inset-inline: 8%;
+  top: 0;
+  height: 1px;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgb(255 160 90 / 0.7), transparent);
+}
+.pop-card-fill {
+  background: linear-gradient(165deg, #241e1a 0%, #18140f 55%, #120f0d 100%);
+}
 /* Faint blueprint grid used behind sections */
 .blueprint {
   background-image:
-    linear-gradient(to right, rgb(242 235 225 / 0.035) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(242 235 225 / 0.035) 1px, transparent 1px);
+    linear-gradient(to right, color-mix(in srgb, var(--color-cream) 3.5%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--color-cream) 3.5%, transparent) 1px, transparent 1px);
   background-size: 72px 72px;
 }
 

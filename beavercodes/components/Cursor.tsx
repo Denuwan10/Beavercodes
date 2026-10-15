@@ -91,7 +91,7 @@ export default function Cursor() {
         >
           <span
             ref={label}
-            className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink opacity-0 transition-opacity duration-300 group-data-[mode=view]:opacity-100"
+            className="font-mono  opacity-0 transition-opacity duration-300 group-data-[mode=view]:opacity-100"
           />
         </div>
       </div>

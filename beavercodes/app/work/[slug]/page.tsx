@@ -1,0 +1,81 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import WorkHeader from "@/components/WorkHeader";
+import Footer from "@/components/Footer";
+import ProjectDetail from "@/components/ProjectDetail";
+import { PROJECTS, getProject } from "@/utils/projects";
+import { SITE, absoluteUrl } from "@/utils/site";
+
+/**
+ * Full project page — what you get opening /work/<slug> directly (a shared
+ * link, a search result). From a portfolio card on the home page the same
+ * content opens as an overlay instead (app/@modal/(.)work/[slug]).
+ */
+export const dynamicParams = false;
+export function generateStaticParams() {
+  return PROJECTS.map((p) => ({ slug: p.slug }));
+}
+
+type Params = { params: Promise<{ slug: string }> };
+
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  const p = getProject((await params).slug);
+  if (!p) return {};
+  const title = `${p.title} — ${p.category}`;
+  const description = `${p.intro.split(". ")[0]}. Features, technology stack and process.`;
+  const image = `/work/${p.image}-${(p.widths ?? [800, 1600])[1]}.webp`;
+  return {
+    title,
+    description,
+    alternates: { canonical: `/work/${p.slug}` },
+    openGraph: { type: "article", url: `/work/${p.slug}`, title, description, images: [{ url: image, alt: p.alt }] },
+    twitter: { card: "summary_large_image", title, description, images: [image] },
+  };
+}
+
+export default async function ProjectPage({ params }: Params) {
+  const p = getProject((await params).slug);
+  if (!p) notFound();
+
+  // Project + breadcrumb structured data (rich results, AI assistants).
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CreativeWork",
+        "@id": `${absoluteUrl(`/work/${p.slug}`)}#project`,
+        name: `${p.title} — ${p.category}`,
+        description: p.intro,
+        url: absoluteUrl(`/work/${p.slug}`),
+        image: absoluteUrl(`/work/${p.image}-${(p.widths ?? [800, 1600])[1]}.webp`),
+        dateCreated: p.year,
+        genre: p.industry,
+        keywords: [...p.tags, ...p.stack.flatMap((s) => s.items)].join(", "),
+        creator: { "@id": `${SITE.url}/#organization` },
+        isPartOf: { "@id": `${SITE.url}/#website` },
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: absoluteUrl("/") },
+          { "@type": "ListItem", position: 2, name: "Work", item: absoluteUrl("/#portfolio") },
+          { "@type": "ListItem", position: 3, name: p.title, item: absoluteUrl(`/work/${p.slug}`) },
+        ],
+      },
+    ],
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
+      />
+      <WorkHeader backHref={`/?work=${p.slug}`} />
+      <main className="bg-ink pt-20">
+        <ProjectDetail p={p} mode="page" />
+      </main>
+      <Footer base="/" />
+    </>
+  );
+}

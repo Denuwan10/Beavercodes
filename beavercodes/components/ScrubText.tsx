@@ -47,7 +47,7 @@ export default function ScrubText({ text, accent = [], className, as: Tag = "p" 
         const isAccent = accent.includes(clean);
         return (
           <span key={i} aria-hidden>
-            <span data-word className={isAccent ? "font-serif font-normal italic text-ember" : undefined}>
+            <span data-word className={isAccent ? "text-ember" : undefined}>
               {w}
             </span>{" "}
           </span>

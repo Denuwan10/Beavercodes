@@ -64,11 +64,13 @@ export default function IntroHud() {
             <p className="eyebrow mb-4 text-ember">
               {c.n} — {c.label}
             </p>
-            <h2 className="font-serif text-[clamp(2.8rem,7vw,6.5rem)] leading-[0.92] text-cream [text-shadow:0_4px_40px_rgba(0,0,0,0.6)]">
+            {/* Decorative intro captions: paragraphs, not headings, so they
+                don't clutter the page outline search engines read. */}
+            <p className="text-[clamp(2.6rem,6.4vw,6rem)] font-semibold leading-[0.95] tracking-[-0.04em] text-cream [text-shadow:0_4px_40px_rgba(0,0,0,0.6)]">
               {c.line[0]}
               <br />
-              <em className="text-amber">{c.line[1]}</em>
-            </h2>
+              <em className="not-italic text-amber">{c.line[1]}</em>
+            </p>
           </div>
         ))}
       </div>

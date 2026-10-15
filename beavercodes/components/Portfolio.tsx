@@ -1,107 +1,18 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import SectionHeading, { Serif } from "./SectionHeading";
-import {
-  BusinessSitePreview,
-  EcommercePreview,
-  ManagementSystemPreview,
-  MobileAppPreview,
-} from "./ProjectPreviews";
+import ProjectShot from "./ProjectShot";
 import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect";
+import { useLenis } from "@/hooks/useLenis";
+import { useExperience } from "@/utils/store";
+import { PROJECTS, type Project } from "@/utils/projects";
 
 gsap.registerPlugin(ScrollTrigger);
-
-type Project = {
-  title: string;
-  category: string;
-  summary: string;
-  tags: string[];
-  bg: string;
-  Preview: () => React.ReactElement;
-  /** Device frame around the code-drawn preview. */
-  frame?: "laptop" | "monitor";
-  /**
-   * Optional real screenshot (e.g. /work/business-site.jpg, or a Higgsfield
-   * render registered in utils/assets.ts). When set it replaces the drawn preview.
-   */
-  image?: string;
-};
-
-/** Thin aluminium laptop frame — makes website previews read as real products. */
-function LaptopFrame({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="mx-auto w-full">
-      <div className="rounded-t-[18px] border border-white/10 bg-[#0b0a0a] p-[2.2%] shadow-[0_60px_120px_-40px_rgba(0,0,0,0.9)]">
-        <div className="overflow-hidden rounded-[6px]">{children}</div>
-      </div>
-      <div className="relative mx-[-6%] h-[14px] rounded-b-[14px] bg-gradient-to-b from-[#b9b4ae] to-[#6f6b67]">
-        <div className="absolute left-1/2 top-0 h-[5px] w-[16%] -translate-x-1/2 rounded-b-md bg-black/25" />
-      </div>
-    </div>
-  );
-}
-
-/** Studio display frame for dashboards. */
-function MonitorFrame({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="mx-auto flex w-full flex-col items-center">
-      <div className="w-full rounded-[14px] border border-white/10 bg-[#0b0a0a] p-[1.6%] shadow-[0_60px_120px_-40px_rgba(0,0,0,0.9)]">
-        <div className="overflow-hidden rounded-[6px]">{children}</div>
-      </div>
-      <div className="h-[22px] w-[12%] bg-gradient-to-b from-[#8f8a85] to-[#5d5955]" />
-      <div className="h-[6px] w-[26%] rounded-full bg-[#7b7671]" />
-    </div>
-  );
-}
-
-function Shot({ p }: { p: Project }) {
-  // eslint-disable-next-line @next/next/no-img-element
-  const inner = p.image ? <img src={p.image} alt={`${p.title} screenshot`} className="block h-auto w-full" loading="lazy" /> : <p.Preview />;
-  if (p.frame === "laptop") return <LaptopFrame>{inner}</LaptopFrame>;
-  if (p.frame === "monitor") return <MonitorFrame>{inner}</MonitorFrame>;
-  return inner;
-}
-
-const PROJECTS: Project[] = [
-  {
-    title: "Business Website",
-    category: "Web Development",
-    summary: "A conversion-focused corporate site with a fast CMS and a brand that finally feels premium.",
-    tags: ["Next.js", "Headless CMS", "SEO"],
-    bg: "linear-gradient(150deg, #2a1a10 0%, #120d0a 70%)",
-    Preview: BusinessSitePreview,
-    frame: "laptop",
-  },
-  {
-    title: "E-Commerce Platform",
-    category: "Web & Software",
-    summary: "A storefront and back-office built to scale, with checkout tuned for speed on every device.",
-    tags: ["Storefront", "Payments", "Inventory"],
-    bg: "linear-gradient(150deg, #3b1f0f 0%, #140e0a 70%)",
-    Preview: EcommercePreview,
-  },
-  {
-    title: "Mobile Application",
-    category: "Mobile App Development",
-    summary: "Native-feeling iOS and Android apps from one codebase — smooth, accessible and delightful.",
-    tags: ["iOS", "Android", "React Native"],
-    bg: "linear-gradient(150deg, #4a2511 0%, #160f0b 70%)",
-    Preview: MobileAppPreview,
-  },
-  {
-    title: "Business Management System",
-    category: "Software Development",
-    summary: "One dashboard for orders, staff and reporting — replacing five spreadsheets and a lot of stress.",
-    tags: ["Dashboard", "Roles & Permissions", "Reports"],
-    bg: "linear-gradient(150deg, #2d1c12 0%, #100c0a 70%)",
-    Preview: ManagementSystemPreview,
-    frame: "monitor",
-  },
-];
 
 function ProjectCard({ p, i }: { p: Project; i: number }) {
   const onMove = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -118,22 +29,34 @@ function ProjectCard({ p, i }: { p: Project; i: number }) {
   };
 
   return (
-    <article className="portfolio-card group w-full shrink-0 lg:w-[min(72vw,1040px)]">
+    // Desktop width is capped by the viewport *height* as well: the 16:10 preview
+    // plus its caption (up to a two-line title) must fit between the navbar and
+    // the progress line, or the pinned section clips them.
+    <article
+      id={`work-${p.slug}`}
+      className="portfolio-card group w-full shrink-0 lg:w-[min(72vw,1040px,calc((100svh_-_20.5rem)_*_1.6))]"
+    >
+      {/* The whole card opens the project. An in-app link, so it opens as an
+          overlay over this page (app/@modal) — the home page stays mounted
+          and closing it returns here instantly. scroll={false}: keep our place. */}
+      <Link
+        href={`/work/${p.slug}`}
+        scroll={false}
+        className="block rounded-[28px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ember"
+      >
       <div
         onPointerMove={onMove}
         onPointerLeave={onLeave}
         data-cursor="view"
         data-cursor-label="View"
-        className="relative aspect-[4/3] overflow-hidden rounded-[28px] border border-cream/10 [perspective:1200px] md:aspect-[16/10]"
+        className="pop-card relative aspect-[4/3] overflow-hidden rounded-[28px] [perspective:1200px] md:aspect-[16/10]"
         style={{ background: p.bg }}
       >
         <div aria-hidden className="blueprint absolute inset-0 opacity-60" />
         <div
-          className="absolute inset-0 flex items-center justify-center p-[7%] transition-transform duration-[900ms] ease-[var(--ease-out-expo)] [transform:rotateX(var(--rx,0deg))_rotateY(var(--ry,0deg))] group-hover:scale-[1.035]"
+          className="absolute inset-0 flex items-center justify-center px-[6%] pb-[5%] pt-[14%] transition-transform duration-[900ms] ease-[var(--ease-out-expo)] [transform:rotateX(var(--rx,0deg))_rotateY(var(--ry,0deg))] group-hover:scale-[1.035] md:pt-[9%]"
         >
-          <div className="w-full max-w-[720px]">
-            <Shot p={p} />
-          </div>
+          <ProjectShot p={p} />
         </div>
         <div className="absolute left-6 top-6 flex items-center gap-3 md:left-8 md:top-8">
           <span className="rounded-full bg-ink/60 px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-cream/80 backdrop-blur">
@@ -144,23 +67,31 @@ function ProjectCard({ p, i }: { p: Project; i: number }) {
           {String(i + 1).padStart(2, "0")} / {String(PROJECTS.length).padStart(2, "0")}
         </span>
       </div>
-      <div className="mt-6 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-        <h3 className="text-[clamp(1.6rem,3vw,2.6rem)] font-extrabold tracking-tight">
-          <span className="bg-[linear-gradient(currentColor,currentColor)] bg-[length:0%_2px] bg-left-bottom bg-no-repeat pb-1 transition-[background-size] duration-700 ease-[var(--ease-out-expo)] group-hover:bg-[length:100%_2px]">
-            {p.title}
-          </span>
+      <div className="mt-5 flex flex-col gap-4 md:flex-row md:items-start md:justify-between md:gap-8">
+        {/* Hover underline: a real text underline (sits just under the baseline,
+            clear of the next line) that fades in, instead of a background bar
+            at the bottom of each line box, which cut into a wrapped second line. */}
+        <h3 className="min-w-0 text-balance text-[clamp(1.5rem,2.4vw,2.3rem)] font-extrabold leading-[1.12] tracking-tight underline decoration-transparent decoration-2 underline-offset-[0.14em] transition-[text-decoration-color] duration-500 ease-out group-hover:decoration-ember md:flex-1">
+          {p.title}
         </h3>
-        <div className="max-w-md">
+        <div className="max-w-md md:w-[42%] md:shrink-0">
           <p className="text-mute">{p.summary}</p>
-          <ul className="mt-3 flex flex-wrap gap-2">
-            {p.tags.map((t) => (
-              <li key={t} className="font-mono text-[11px] uppercase tracking-wider text-cream/50">
-                · {t}
-              </li>
-            ))}
-          </ul>
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+            <ul className="flex flex-wrap gap-2">
+              {p.tags.map((t) => (
+                <li key={t} className="font-mono text-[11px] uppercase tracking-wider text-cream/50">
+                  · {t}
+                </li>
+              ))}
+            </ul>
+            <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-ember">
+              View project
+              <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1">→</span>
+            </span>
+          </div>
         </div>
       </div>
+      </Link>
     </article>
   );
 }
@@ -169,6 +100,41 @@ export default function Portfolio() {
   const section = useRef<HTMLElement>(null);
   const track = useRef<HTMLDivElement>(null);
   const bar = useRef<HTMLDivElement>(null);
+  // The desktop pin (when active), so a card's scroll position can be worked out.
+  const pin = useRef<{ st: ScrollTrigger; distance: () => number } | null>(null);
+  const lenis = useLenis();
+  const loaded = useExperience((s) => s.loaded);
+
+  // Coming back from a project page ("/?work=<slug>" — a query, not a #hash,
+  // so the browser doesn't jump before the intro is ready): once the
+  // preloader is done, jump straight to that project's card. On desktop the
+  // cards scroll sideways inside a pinned section, so the target is the scroll
+  // position where that card sits in the middle of the screen, not its top.
+  useEffect(() => {
+    if (!loaded) return;
+    const slug = new URLSearchParams(window.location.search).get("work");
+    const card = slug && document.getElementById(`work-${slug}`);
+    if (!card) return;
+    const t = window.setTimeout(() => {
+      let y: number;
+      const p = pin.current;
+      if (p) {
+        const x = card.offsetLeft + card.offsetWidth / 2 - window.innerWidth / 2;
+        const progress = Math.min(1, Math.max(0, x / p.distance()));
+        y = p.st.start + progress * (p.st.end - p.st.start);
+        // Put the track there now instead of letting the scrub catch up.
+        p.st.animation?.progress(progress);
+      } else {
+        y = card.getBoundingClientRect().top + window.scrollY - 96;
+      }
+      if (lenis) lenis.scrollTo(y, { immediate: true, force: true });
+      else window.scrollTo(0, y);
+      // Tidy the address bar back to "/". Keep history.state: Next.js keeps
+      // its router state there, and wiping it breaks the next in-app navigation.
+      window.history.replaceState(window.history.state, "", window.location.pathname);
+    }, 250);
+    return () => window.clearTimeout(t);
+  }, [loaded, lenis]);
 
   // Desktop: pinned horizontal gallery. Below lg: natural vertical scroll.
   useIsomorphicLayoutEffect(() => {
@@ -192,6 +158,22 @@ export default function Portfolio() {
           },
         },
       });
+      // The scroll distance is measured from the track's width. If that width
+      // changes after the first measurement (layout settling, a resize the
+      // browser didn't report, a hot reload), re-measure — otherwise the track
+      // keeps scrolling past the last card into blank space.
+      if (tween.scrollTrigger) pin.current = { st: tween.scrollTrigger, distance };
+
+      let lastW = el.scrollWidth;
+      let pending = 0;
+      const ro = new ResizeObserver(() => {
+        if (el.scrollWidth === lastW) return;
+        lastW = el.scrollWidth;
+        cancelAnimationFrame(pending);
+        pending = requestAnimationFrame(() => ScrollTrigger.refresh());
+      });
+      ro.observe(el);
+
       // Gentle parallax on each preview while the track moves.
       gsap.utils.toArray<HTMLElement>(".portfolio-card").forEach((card) => {
         gsap.fromTo(card, { opacity: 0.55 }, {
@@ -206,12 +188,20 @@ export default function Portfolio() {
           },
         });
       });
+
+      return () => {
+        pin.current = null;
+        ro.disconnect();
+        cancelAnimationFrame(pending);
+      };
     });
     return () => mm.revert();
   }, []);
 
   return (
-    <section id="portfolio" ref={section} className="relative overflow-hidden bg-ink py-[clamp(5rem,10vw,8rem)] lg:flex lg:h-svh lg:flex-col lg:justify-center lg:py-0">
+    // Desktop: room at the top for the fixed navbar and at the bottom for the
+    // progress line, so cards never slide under either.
+    <section id="portfolio" ref={section} className="relative overflow-hidden bg-ink py-[clamp(5rem,10vw,8rem)] lg:flex lg:h-svh lg:flex-col lg:justify-center lg:pb-[4.5rem] lg:pt-[6.5rem]">
       <div ref={track} className="flex flex-col gap-20 px-[var(--gutter)] lg:w-max lg:flex-row lg:items-center lg:gap-[6vw]">
         <div className="shrink-0 lg:w-[34vw]">
           <SectionHeading

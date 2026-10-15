@@ -7,7 +7,8 @@
  * at the chair, so most exports work without touching anything else.
  */
 export const BEAVER_MODEL = {
-  url: process.env.NEXT_PUBLIC_BEAVER_MODEL || "/models/beaver.glb",
+  // /models is served as immutable (next.config.ts) — bump ?v= whenever the file changes.
+  url: process.env.NEXT_PUBLIC_BEAVER_MODEL || "/models/beaver.glb?v=4",
 
   /** Draco / Meshopt decoding (gltf-transform optimize output). */
   draco: true,
@@ -30,6 +31,27 @@ export const BEAVER_MODEL = {
      * arms forward and a tail behind are rarely centred on their hips.
      */
     pivotDepth: 0.5,
+  },
+
+  /**
+   * The premium keyboard under the paws. Tripo modelled the beaver with a plain
+   * keyboard fused to its paws; cutting it out tore the fingers and left a hole,
+   * so the mesh stays intact and this keyboard is built *around* the baked one,
+   * hiding it. All values are in the model's own (unscaled) space, measured from
+   * the baked keyboard, so it follows the beaver when `fit` changes:
+   *   center  x/z centre of the baked keyboard
+   *   size    its length × depth, plus a little margin so it's fully covered
+   *   top     height of the new case top — just above the baked key tops
+   *           (−0.025), so the fingertips settle among the new keycaps
+   *   yaw     turns it to face the paws (front toward the beaver)
+   * It always stands on the desk; its height is whatever reaches `top`.
+   */
+  keyboard: {
+    enabled: true,
+    center: [0.3293, 0.1622] as [number, number],
+    size: [0.402, 0.231] as [number, number],
+    top: -0.027,
+    yaw: -1.954,
   },
 
   /** Animation clip name patterns (any subset may exist). */

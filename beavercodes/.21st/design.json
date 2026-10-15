@@ -1,0 +1,129 @@
+{
+  "version": 1,
+  "project": {
+    "name": "beavercodes",
+    "productType": null,
+    "stack": [
+      "nextjs",
+      "react",
+      "tailwind-v4"
+    ]
+  },
+  "sources": {
+    "tokens": [
+      "app/globals.css"
+    ],
+    "components": [],
+    "assets": [
+      "public/brand"
+    ],
+    "instructions": []
+  },
+  "design": {
+    "colorMode": "light",
+    "colors": {
+      "--color-ink": {
+        "value": "#0c0a09",
+        "source": "app/globals.css"
+      },
+      "--color-coal": {
+        "value": "#141110",
+        "source": "app/globals.css"
+      },
+      "--color-char": {
+        "value": "#1c1815",
+        "source": "app/globals.css"
+      },
+      "--color-line": {
+        "value": "rgb(242 235 225 / 0.1)",
+        "source": "app/globals.css"
+      },
+      "--color-cream": {
+        "value": "#f2ebe1",
+        "source": "app/globals.css"
+      },
+      "--color-mute": {
+        "value": "#a39789",
+        "source": "app/globals.css"
+      },
+      "--color-ember": {
+        "value": "#ff7a1a",
+        "source": "app/globals.css"
+      },
+      "--color-amber": {
+        "value": "#ffb35c",
+        "source": "app/globals.css"
+      },
+      "--color-bark": {
+        "value": "#7a4a2b",
+        "source": "app/globals.css"
+      }
+    },
+    "typography": {
+      "--font-sans": {
+        "value": "var(--font-manrope), ui-sans-serif, system-ui, sans-serif",
+        "source": "app/globals.css"
+      },
+      "--font-serif": {
+        "value": "var(--font-instrument), ui-serif, Georgia, serif",
+        "source": "app/globals.css"
+      },
+      "--font-mono": {
+        "value": "var(--font-jetbrains), ui-monospace, monospace",
+        "source": "app/globals.css"
+      }
+    },
+    "spacing": {
+      "--gutter": {
+        "value": "clamp(1.25rem, 4vw, 3.5rem)",
+        "source": "app/globals.css"
+      }
+    },
+    "radius": {},
+    "shadows": {},
+    "motion": {
+      "--ease-out-expo": {
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "source": "app/globals.css"
+      },
+      "--ease-in-out-quart": {
+        "value": "cubic-bezier(0.76, 0, 0.24, 1)",
+        "source": "app/globals.css"
+      }
+    },
+    "density": "unknown"
+  },
+  "components": {
+    "installed": [],
+    "preferredPrimitives": [],
+    "patterns": []
+  },
+  "constraints": {
+    "must": [],
+    "avoid": []
+  },
+  "decisions": [],
+  "evidence": [
+    {
+      "fact": "design.colorMode:light",
+      "source": "app/globals.css"
+    },
+    {
+      "fact": "design.tokens",
+      "source": "app/globals.css"
+    },
+    {
+      "fact": "project.stack:nextjs",
+      "source": "package.json"
+    },
+    {
+      "fact": "project.stack:react",
+      "source": "package.json"
+    },
+    {
+      "fact": "project.stack:tailwind-v4",
+      "source": "package.json"
+    }
+  ],
+  "generatedAt": "2026-10-12T15:06:35.962Z"
+}

@@ -58,16 +58,16 @@ export default function MagneticButton({
     "group relative inline-flex items-center justify-center gap-3 overflow-hidden rounded-full px-7 py-4 text-sm font-semibold tracking-wide transition-colors duration-500 disabled:opacity-60";
   const styles =
     variant === "primary"
-      ? "bg-ember text-ink"
-      : "border border-cream/20 text-cream hover:border-cream/60";
-  const fill = variant === "primary" ? "bg-cream" : "bg-cream";
+      ? "bg-ember text-paper"
+      : "border border-line text-cream hover:border-cream/60";
+  const fill = variant === "primary" ? "bg-ember-deep" : "bg-cream";
 
   const inner = (
     <>
       <span
         aria-hidden
         className={cn(
-          "absolute inset-0 translate-y-full rounded-[50%_50%_0_0] transition-[transform,border-radius] duration-700 ease-[var(--ease-out-expo)] group-hover:translate-y-0 group-hover:rounded-none",
+          "absolute inset-0 translate-y-full rounded-[50%_50%_0_0] transition-[transform,border-radius] duration-[400ms] ease-[var(--ease-out-expo)] group-hover:translate-y-0 group-hover:rounded-none",
           fill,
         )}
       />

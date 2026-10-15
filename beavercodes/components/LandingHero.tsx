@@ -52,12 +52,12 @@ export default function LandingHero({ revealed }: { revealed: boolean }) {
         style={{ background: "radial-gradient(closest-side, rgba(255,122,26,0.4), rgba(255,122,26,0.06) 60%, transparent)" }}
       />
 
-      <div className="container-x relative z-10 flex h-full w-full flex-col pb-[clamp(1.5rem,5vh,3rem)] pt-28">
+      <div className="container-x relative z-10 flex h-full w-full flex-col pb-[clamp(1.25rem,4vh,3rem)] pt-24 sm:pt-28">
         <div className="grid flex-1 items-center gap-y-6 lg:grid-cols-12 lg:gap-x-10">
           {/* The VR beaver: turns its head to follow the cursor */}
           <motion.div
             {...fade(revealed, 0.3)}
-            className="mx-auto h-[min(24vh,12rem)] w-full max-w-[22rem] lg:col-span-5 lg:mx-0 lg:h-[min(68vh,40rem)] lg:max-w-none"
+            className="mx-auto h-[min(20vh,12rem)] w-full max-w-[22rem] max-lg:[@media(max-height:700px)]:h-[15vh] lg:col-span-5 lg:mx-0 lg:h-[min(68vh,40rem)] lg:max-w-none"
           >
             <BeaverLook className="h-full w-full" />
           </motion.div>
@@ -71,7 +71,7 @@ export default function LandingHero({ revealed }: { revealed: boolean }) {
             lines={[
               "Your business deserves",
               <>
-                a <em className="font-serif font-normal italic tracking-[-0.01em] text-ember">stronger</em> digital future.
+                a <em className="not-italic text-ember">stronger</em> digital future.
               </>,
             ]}
           />
@@ -100,13 +100,15 @@ export default function LandingHero({ revealed }: { revealed: boolean }) {
         </div>
 
         {/* Proof, kept quiet: one hairline row of small figures */}
+        {/* Phones: one compact 3-column row (number above label) — wrapping onto
+            two rows pushed the stats past the bottom of the screen. */}
         <motion.dl
           {...fade(revealed, 0.75)}
-          className="hairline flex flex-wrap gap-x-10 gap-y-3 border-t pt-5 md:gap-x-16"
+          className="hairline grid grid-cols-3 gap-3 border-t pt-4 sm:flex sm:flex-wrap sm:gap-x-10 sm:gap-y-3 sm:pt-5 md:gap-x-16"
         >
           {STATS.map((s, i) => (
-            <div key={s.label} className="flex flex-row-reverse items-baseline justify-end gap-3">
-              <dt className="text-sm text-mute">{s.label}</dt>
+            <div key={s.label} className="flex flex-col-reverse gap-1 sm:flex-row-reverse sm:items-baseline sm:justify-end sm:gap-3">
+              <dt className="text-xs leading-tight text-mute sm:text-sm">{s.label}</dt>
               <dd className="text-xl font-semibold tabular-nums tracking-tight md:text-2xl">
                 <CountUp to={s.value} run={revealed} delay={0.9 + i * 0.12} />
                 <span className="text-ember">{s.suffix}</span>

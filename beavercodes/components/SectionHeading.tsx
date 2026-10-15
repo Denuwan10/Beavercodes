@@ -49,5 +49,6 @@ export default function SectionHeading({ index, label, title, intro, className }
 }
 
 export function Serif({ children }: { children: React.ReactNode }) {
-  return <em className="font-serif font-normal italic tracking-[-0.01em] text-ember">{children}</em>;
+  // Accent words: same font and weight as the heading, just orange.
+  return <em className="not-italic text-ember">{children}</em>;
 }

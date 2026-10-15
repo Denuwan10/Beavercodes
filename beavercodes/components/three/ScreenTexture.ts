@@ -222,7 +222,7 @@ export class ScreenCanvas {
       ctx.font = "700 30px ui-sans-serif, system-ui";
       ctx.fillText("Grow online.", x + 28, y + 96);
       ctx.fillStyle = "#ff7a1a";
-      ctx.font = "italic 30px Georgia, serif";
+      ctx.font = "700 30px ui-sans-serif, system-ui";
       ctx.fillText("beautifully.", x + 28, y + 132);
       ctx.fillStyle = "#0c0a09";
       roundRect(ctx, x + 28, y + 158, 120, 34, 17);

@@ -73,7 +73,7 @@ export default function Process() {
       <div aria-hidden className="blueprint absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]" />
       <div className="container-x relative">
         <SectionHeading
-          index="04"
+          index="03"
           label="Process"
           title={[
             "How we",
@@ -98,12 +98,16 @@ export default function Process() {
                 data-step
                 className="group relative grid grid-cols-[40px_1fr] gap-6 pb-20 last:pb-0 md:grid-cols-2 md:gap-24 md:pb-32"
               >
-                {/* Node */}
+                {/* Node: pops (springs up, settles larger) with a shockwave ring
+                    and a glow while its step is active */}
                 <span
                   aria-hidden
-                  className="absolute left-[19px] top-3 z-10 h-4 w-4 -translate-x-1/2 rounded-full border border-cream/30 bg-coal transition-all duration-700 group-[.is-active]:scale-125 group-[.is-active]:border-ember group-[.is-active]:bg-ember group-[.is-passed]:border-ember group-[.is-passed]:bg-ember md:left-1/2"
+                  className="absolute left-[19px] top-3 z-10 h-4 w-4 -translate-x-1/2 rounded-full border border-cream/30 bg-coal transition-[background-color,border-color,box-shadow] duration-500 group-[.is-active]:border-ember group-[.is-active]:bg-ember group-[.is-active]:shadow-[0_0_14px_4px_rgba(255,122,26,0.75),0_0_42px_10px_rgba(255,122,26,0.35)] group-[.is-active]:[animation:step-node-pop_0.7s_cubic-bezier(0.34,1.56,0.64,1)_forwards] group-[.is-passed]:border-ember group-[.is-passed]:bg-ember md:left-1/2"
                 >
                   <span className="absolute inset-[-8px] rounded-full bg-ember/30 opacity-0 blur-md transition-opacity duration-700 group-[.is-active]:opacity-100" />
+                  {/* Shockwave rings: burst on arrival, then keep pulsing while active */}
+                  <span className="absolute inset-0 rounded-full border-2 border-ember opacity-0 group-[.is-active]:[animation:step-ring_1.6s_cubic-bezier(0.16,1,0.3,1)_infinite]" />
+                  <span className="absolute inset-0 rounded-full border border-amber opacity-0 group-[.is-active]:[animation:step-ring_1.6s_cubic-bezier(0.16,1,0.3,1)_0.5s_infinite]" />
                 </span>
 
                 <motion.div
@@ -111,17 +115,47 @@ export default function Process() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-15% 0px" }}
                   transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
+                  // Zig-zag on desktop: odd steps in the left column (text hugging
+                  // the centre line), even steps in the right. Exactly one column
+                  // class per breakpoint — two conflicting ones (col-start-auto +
+                  // col-start-2) let CSS order put every step on the left.
                   className={cn(
-                    "col-start-2 md:col-start-auto",
-                    right ? "md:col-start-2" : "md:text-right",
+                    "col-start-2",
+                    right ? "md:col-start-2" : "md:col-start-1 md:text-right",
                   )}
                 >
-                  <span className="block font-sans text-[clamp(4rem,10vw,8.5rem)] font-extrabold leading-[0.8] tracking-tighter text-transparent transition-colors duration-700 [-webkit-text-stroke:1px_rgba(242,235,225,0.25)] group-[.is-active]:text-ember group-[.is-active]:[-webkit-text-stroke:0px] group-[.is-passed]:[-webkit-text-stroke:1px_rgba(255,122,26,0.6)]">
-                    {s.n}
-                  </span>
-                  <h3 className="mt-5 text-3xl font-bold tracking-tight md:text-5xl">{s.title}</h3>
-                  <p className="mt-3 text-lg text-cream">{s.text}</p>
-                  <p className={cn("mt-3 max-w-md text-mute", !right && "md:ml-auto")}>{s.detail}</p>
+                  {/* The whole step — number, title, text — pops as one block when
+                      it becomes active, over a warm glow. Inactive steps sit back:
+                      dimmer and slightly smaller, so the active one jumps out. */}
+                  <div
+                    className={cn(
+                      "relative opacity-35 transition-[opacity,scale] duration-700 ease-[var(--ease-out-expo)] scale-[0.96] group-[.is-passed]:opacity-60 group-[.is-active]:scale-100 group-[.is-active]:opacity-100 group-[.is-active]:[animation:step-block-pop_0.75s_cubic-bezier(0.34,1.56,0.64,1)]",
+                      right ? "origin-left" : "origin-left md:origin-right",
+                    )}
+                  >
+                    {/* Warm glow behind the step */}
+                    <span
+                      aria-hidden
+                      className={cn(
+                        "pointer-events-none absolute -inset-x-16 -inset-y-12 -z-10 rounded-[50%] opacity-0 [background:radial-gradient(closest-side,rgba(255,122,26,0.28),rgba(255,122,26,0.08)_55%,transparent)] group-[.is-active]:[animation:step-halo-in_0.8s_cubic-bezier(0.16,1,0.3,1)_forwards,step-halo-breathe_3.2s_ease-in-out_0.8s_infinite]",
+                      )}
+                    />
+
+                    {/* Number: pops and glows when active */}
+                    <span
+                      className={cn(
+                        "block font-sans text-[clamp(4rem,10vw,8.5rem)] font-extrabold leading-[0.8] tracking-tighter text-transparent transition-[color,text-shadow] duration-700 [-webkit-text-stroke:1px_rgba(242,235,225,0.25)] group-[.is-active]:text-ember group-[.is-active]:[-webkit-text-stroke:0px] group-[.is-active]:[text-shadow:0_0_24px_rgba(255,122,26,0.8),0_0_60px_rgba(255,122,26,0.5),0_0_120px_rgba(255,122,26,0.3)] group-[.is-active]:[animation:step-number-pop_0.7s_cubic-bezier(0.34,1.56,0.64,1)] group-[.is-passed]:[-webkit-text-stroke:1px_rgba(255,122,26,0.6)]",
+                        right ? "origin-left" : "origin-left md:origin-right",
+                      )}
+                    >
+                      {s.n}
+                    </span>
+                    <h3 className="mt-5 text-3xl font-bold tracking-tight transition-[text-shadow] duration-700 group-[.is-active]:[text-shadow:0_0_24px_rgba(255,179,92,0.35)] md:text-5xl">
+                      {s.title}
+                    </h3>
+                    <p className="mt-3 text-lg text-cream">{s.text}</p>
+                    <p className={cn("mt-3 max-w-md text-mute", !right && "md:ml-auto")}>{s.detail}</p>
+                  </div>
                 </motion.div>
               </li>
             );

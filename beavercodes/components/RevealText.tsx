@@ -1,5 +1,6 @@
 "use client";
 
+import { Fragment } from "react";
 import { motion, type Variants } from "framer-motion";
 import { cn } from "@/utils/math";
 
@@ -20,7 +21,8 @@ const container: Variants = {
 };
 
 const line: Variants = {
-  hidden: { y: "110%", rotate: 2.5 },
+  // Starts far enough down that nothing peeks out of the (padded) mask.
+  hidden: { y: "140%", rotate: 2.5 },
   show: { y: "0%", rotate: 0, transition: { duration: 1.1, ease: [0.16, 1, 0.3, 1] } },
 };
 
@@ -40,11 +42,18 @@ export default function RevealText({ lines, as = "h2", className, lineClassName,
         : { whileInView: "show", viewport: { once: true, margin: "-12% 0px" } })}
     >
       {lines.map((l, i) => (
-        <span key={i} className="block overflow-hidden pb-[0.08em] -mb-[0.08em]">
-          <motion.span variants={line} className={cn("block origin-top-left will-change-transform", lineClassName)}>
-            {l}
-          </motion.span>
-        </span>
+        // The mask needs room for the glyphs, not just the line box: tight
+        // headline leading clipped ascenders (b, d, k, l) and descenders
+        // (g, p, y). The negative margins keep the line spacing unchanged.
+        // The trailing space doesn't render between block lines, but keeps
+        // the words apart in the text crawlers read ("deserves a", not "deservesa").
+        <Fragment key={i}>
+          <span className="-mb-[0.26em] -mt-[0.14em] block overflow-hidden pb-[0.26em] pt-[0.14em]">
+            <motion.span variants={line} className={cn("block origin-top-left will-change-transform", lineClassName)}>
+              {l}
+            </motion.span>
+          </span>{" "}
+        </Fragment>
       ))}
     </Tag>
   );
