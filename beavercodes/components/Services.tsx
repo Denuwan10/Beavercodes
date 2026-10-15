@@ -241,25 +241,33 @@ const SERVICES: Service[] = [
 export default function Services() {
   const list = useRef<HTMLDivElement>(null);
 
-  // Desktop: cards pin and stack; each one recedes as the next slides over it.
+  // Cards pin and stack on every screen size; each one recedes as the next
+  // slides over it. Phones skip the blur (costly on mobile GPUs).
   useIsomorphicLayoutEffect(() => {
     const el = list.current;
     if (!el) return;
     const mm = gsap.matchMedia();
-    mm.add("(min-width: 1024px) and (prefers-reduced-motion: no-preference)", () => {
-      const cards = gsap.utils.toArray<HTMLElement>("[data-service-card]", el);
-      cards.forEach((card, i) => {
-        const next = cards[i + 1];
-        if (!next) return;
-        gsap.to(card.querySelector("[data-service-inner]"), {
-          scale: 0.92,
-          opacity: 0.35,
-          filter: "blur(2px)",
-          ease: "none",
-          scrollTrigger: { trigger: next, start: "top 85%", end: "top 15%", scrub: true },
+    mm.add(
+      {
+        desktop: "(min-width: 1024px) and (prefers-reduced-motion: no-preference)",
+        mobile: "(max-width: 1023px) and (prefers-reduced-motion: no-preference)",
+      },
+      (ctx) => {
+        const desktop = !!ctx.conditions?.desktop;
+        const cards = gsap.utils.toArray<HTMLElement>("[data-service-card]", el);
+        cards.forEach((card, i) => {
+          const next = cards[i + 1];
+          if (!next) return;
+          gsap.to(card.querySelector("[data-service-inner]"), {
+            scale: desktop ? 0.92 : 0.94,
+            opacity: desktop ? 0.35 : 0.45,
+            ...(desktop ? { filter: "blur(2px)" } : {}),
+            ease: "none",
+            scrollTrigger: { trigger: next, start: "top 85%", end: desktop ? "top 15%" : "top 20%", scrub: true },
+          });
         });
-      });
-    });
+      },
+    );
     return () => mm.revert();
   }, []);
 
@@ -278,17 +286,20 @@ export default function Services() {
           intro="From the first line of code to the first thousand customers. Everything your business needs to grow online, under one roof."
         />
 
-        <div ref={list} className="mt-16 flex flex-col gap-6 md:mt-28 lg:gap-0">
+        {/* Every size: the cards pin (sticky) and stack one over another.
+            Phones/tablets: one card = one screen (below the navbar), so it can
+            pin without hiding its bottom; desktop: 78vh beside each other. */}
+        <div ref={list} className="mt-16 flex flex-col md:mt-28">
           {SERVICES.map((s, i) => (
             <article
               key={s.title}
               data-service-card
-              className="lg:sticky lg:mb-[10vh] lg:h-[78vh] lg:min-h-[560px] lg:last:mb-0"
-              style={{ top: `calc(10vh + ${i * 22}px)` }}
+              className="sticky top-[calc(5.5rem+var(--i)*10px)] mb-[6vh] h-[calc(100svh-7.5rem)] max-h-[880px] min-h-[520px] last:mb-0 lg:top-[calc(10vh+var(--i)*22px)] lg:mb-[10vh] lg:h-[78vh] lg:max-h-none lg:min-h-[560px]"
+              style={{ "--i": i } as React.CSSProperties}
             >
               <div
                 data-service-inner
-                className="group/card relative grid h-full origin-top overflow-hidden pop-card pop-card-fill rounded-[32px] will-change-transform lg:grid-cols-2"
+                className="group/card relative flex h-full origin-top flex-col overflow-hidden pop-card pop-card-fill rounded-[28px] will-change-transform lg:grid lg:grid-cols-2 lg:rounded-[32px]"
                 onPointerMove={(e) => {
                   const r = e.currentTarget.getBoundingClientRect();
                   e.currentTarget.style.setProperty("--mx", `${e.clientX - r.left}px`);
@@ -300,19 +311,20 @@ export default function Services() {
                   className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover/card:opacity-100"
                   style={{ background: "radial-gradient(520px circle at var(--mx,50%) var(--my,50%), rgba(255,122,26,0.12), transparent 60%)" }}
                 />
-                <div className="relative flex flex-col p-8 md:p-12 lg:p-14">
+                <div className="relative flex shrink-0 flex-col p-6 sm:p-8 md:p-12 lg:p-14">
                   <div className="flex items-center justify-between">
                     <span className="font-mono text-sm text-ember">0{i + 1}</span>
                     <span className="font-mono text-xs uppercase tracking-[0.2em] text-mute">
                       {String(i + 1).padStart(2, "0")} / {String(SERVICES.length).padStart(2, "0")}
                     </span>
                   </div>
-                  <h3 className="mt-10 text-[clamp(2.4rem,4.6vw,4.8rem)] font-extrabold leading-[0.92] tracking-[-0.04em] lg:mt-auto">
+                  <h3 className="mt-5 text-[clamp(2.1rem,4.6vw,4.8rem)] font-extrabold leading-[0.92] tracking-[-0.04em] md:mt-8 lg:mt-auto">
                     {s.title}
                   </h3>
-                  <p className="mt-5 text-[clamp(1.25rem,1.8vw,1.75rem)] font-medium leading-snug tracking-tight text-amber">{s.lead}</p>
-                  <p className="mt-4 max-w-md text-lg text-mute">{s.text}</p>
-                  <ul className="mt-8 grid max-w-md grid-cols-2 gap-x-6 gap-y-3 border-t border-cream/10 pt-6">
+                  <p className="mt-3 text-[clamp(1.15rem,1.8vw,1.75rem)] font-medium leading-snug tracking-tight text-amber md:mt-5">{s.lead}</p>
+                  {/* Phones: the lead says it; this line returns from sm up. */}
+                  <p className="mt-4 hidden max-w-md text-lg text-mute sm:block">{s.text}</p>
+                  <ul className="mt-5 grid max-w-md grid-cols-2 gap-x-6 gap-y-2.5 border-t border-cream/10 pt-4 md:mt-8 md:gap-y-3 md:pt-6">
                     {s.deliverables.map((d) => (
                       <li key={d} className="flex items-center gap-2 text-sm text-cream/80">
                         <span className="h-1 w-1 rounded-full bg-ember" />
@@ -320,15 +332,17 @@ export default function Services() {
                       </li>
                     ))}
                   </ul>
-                  <div className="mt-10">
+                  <div className="mt-6 md:mt-10">
                     <MagneticButton href="#contact" variant="ghost">
                       Start a {s.title.split(" ")[0].toLowerCase()} project <Arrow />
                     </MagneticButton>
                   </div>
                 </div>
-                <div className="relative flex min-h-[340px] items-center justify-center overflow-hidden border-t border-cream/10 bg-[radial-gradient(ellipse_at_center,rgba(255,122,26,0.14),transparent_65%)] p-8 lg:border-l lg:border-t-0">
+                {/* Phones/tablets: the illustration fills whatever height the
+                    text leaves, scaled down so it fits. */}
+                <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden border-t border-cream/10 bg-[radial-gradient(ellipse_at_center,rgba(255,122,26,0.14),transparent_65%)] p-4 lg:min-h-[340px] lg:border-l lg:border-t-0 lg:p-8">
                   <div aria-hidden className="blueprint absolute inset-0 opacity-70" />
-                  <div className="relative flex w-full justify-center transition-transform duration-[900ms] ease-[var(--ease-out-expo)] group-hover/card:scale-[1.03]">
+                  <div className="relative flex w-full justify-center transition-transform duration-[900ms] ease-[var(--ease-out-expo)] max-sm:scale-[0.6] sm:max-lg:scale-[0.8] group-hover/card:scale-[1.03]">
                     <s.Visual />
                   </div>
                 </div>

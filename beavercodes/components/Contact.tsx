@@ -243,7 +243,12 @@ export default function Contact() {
                     </MagneticButton>
                     {status === "error" && (
                       <p className="text-sm text-red-300" role="alert">
-                        Something went wrong. Please email us directly at hello@beavercodes.com.
+                        Sorry, your message couldn&apos;t be sent. Please email us at{" "}
+                        <a href={`mailto:${SITE.email}`} className="underline">{SITE.email}</a> or{" "}
+                        <a href={SITE.whatsapp} target="_blank" rel="noopener noreferrer" className="underline">
+                          WhatsApp {SITE.phone}
+                        </a>
+                        .
                       </p>
                     )}
                   </div>

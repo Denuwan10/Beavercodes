@@ -34,7 +34,9 @@ function ProjectCard({ p, i }: { p: Project; i: number }) {
     // the progress line, or the pinned section clips them.
     <article
       id={`work-${p.slug}`}
-      className="portfolio-card group w-full shrink-0 lg:w-[min(72vw,1040px,calc((100svh_-_20.5rem)_*_1.6))]"
+      // Width is capped by the screen *height* too, so preview + caption
+      // always fit the pinned section: phones use the 4:3 preview, md+ 16:10.
+      className="portfolio-card group w-[min(84vw,calc((100svh_-_24rem)_*_1.33))] shrink-0 md:w-[min(70vw,calc((100svh_-_21rem)_*_1.6))] lg:w-[min(72vw,1040px,calc((100svh_-_20rem)_*_1.6))]"
     >
       {/* The whole card opens the project. An in-app link, so it opens as an
           overlay over this page (app/@modal) — the home page stays mounted
@@ -67,14 +69,14 @@ function ProjectCard({ p, i }: { p: Project; i: number }) {
           {String(i + 1).padStart(2, "0")} / {String(PROJECTS.length).padStart(2, "0")}
         </span>
       </div>
-      <div className="mt-5 flex flex-col gap-4 md:flex-row md:items-start md:justify-between md:gap-8">
+      <div className="mt-5 flex flex-col gap-3 2xl:flex-row 2xl:items-start 2xl:justify-between 2xl:gap-8">
         {/* Hover underline: a real text underline (sits just under the baseline,
             clear of the next line) that fades in, instead of a background bar
             at the bottom of each line box, which cut into a wrapped second line. */}
-        <h3 className="min-w-0 text-balance text-[clamp(1.5rem,2.4vw,2.3rem)] font-extrabold leading-[1.12] tracking-tight underline decoration-transparent decoration-2 underline-offset-[0.14em] transition-[text-decoration-color] duration-500 ease-out group-hover:decoration-ember md:flex-1">
+        <h3 className="min-w-0 text-balance text-[clamp(1.5rem,2.4vw,2.3rem)] font-extrabold leading-[1.12] tracking-tight underline decoration-transparent decoration-2 underline-offset-[0.14em] transition-[text-decoration-color] duration-500 ease-out group-hover:decoration-ember 2xl:flex-1">
           {p.title}
         </h3>
-        <div className="max-w-md md:w-[42%] md:shrink-0">
+        <div className="max-w-xl 2xl:w-[42%] 2xl:shrink-0">
           <p className="text-mute">{p.summary}</p>
           <div className="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
             <ul className="flex flex-wrap gap-2">
@@ -136,10 +138,11 @@ export default function Portfolio() {
     return () => window.clearTimeout(t);
   }, [loaded, lenis]);
 
-  // Desktop: pinned horizontal gallery. Below lg: natural vertical scroll.
+  // Pinned horizontal gallery on every screen size (phones too): scrolling
+  // down slides the cards sideways. Reduced motion: no pin, a plain swipe row.
   useIsomorphicLayoutEffect(() => {
     const mm = gsap.matchMedia();
-    mm.add("(min-width: 1024px) and (prefers-reduced-motion: no-preference)", () => {
+    mm.add("(prefers-reduced-motion: no-preference)", () => {
       const el = track.current;
       if (!el) return;
       const distance = () => el.scrollWidth - window.innerWidth;
@@ -199,11 +202,17 @@ export default function Portfolio() {
   }, []);
 
   return (
-    // Desktop: room at the top for the fixed navbar and at the bottom for the
-    // progress line, so cards never slide under either.
-    <section id="portfolio" ref={section} className="relative overflow-hidden bg-ink py-[clamp(5rem,10vw,8rem)] lg:flex lg:h-svh lg:flex-col lg:justify-center lg:pb-[4.5rem] lg:pt-[6.5rem]">
-      <div ref={track} className="flex flex-col gap-20 px-[var(--gutter)] lg:w-max lg:flex-row lg:items-center lg:gap-[6vw]">
-        <div className="shrink-0 lg:w-[34vw]">
+    // Every size: a pinned, sideways-scrolling gallery. Room at the top for
+    // the fixed navbar and at the bottom for the progress line, so cards
+    // never slide under either. With reduced motion there's no pin — the
+    // row simply swipes sideways.
+    <section
+      id="portfolio"
+      ref={section}
+      className="relative flex h-svh flex-col justify-center overflow-hidden bg-ink pb-14 pt-[5.5rem] motion-reduce:h-auto motion-reduce:overflow-x-auto motion-reduce:py-24 lg:pb-[4.5rem] lg:pt-[6.5rem]"
+    >
+      <div ref={track} className="flex w-max flex-row items-center gap-[8vw] px-[var(--gutter)] lg:gap-[6vw]">
+        <div className="w-[78vw] shrink-0 sm:w-[60vw] lg:w-[34vw]">
           <SectionHeading
             index="02"
             label="Portfolio"
@@ -223,16 +232,16 @@ export default function Portfolio() {
           >
             A look at the kinds of products we craft — each one engineered for performance and designed to grow with the business behind it.
           </motion.p>
-          <p className="eyebrow mt-10 hidden items-center gap-3 lg:flex">
+          <p className="eyebrow mt-8 flex items-center gap-3 lg:mt-10">
             Keep scrolling <span className="text-ember">→</span>
           </p>
         </div>
         {PROJECTS.map((p, i) => (
           <ProjectCard key={p.title} p={p} i={i} />
         ))}
-        <div className="hidden w-[4vw] shrink-0 lg:block" />
+        <div className="w-[4vw] shrink-0" />
       </div>
-      <div className="absolute bottom-10 left-[var(--gutter)] right-[var(--gutter)] hidden h-px bg-cream/10 lg:block">
+      <div className="absolute bottom-7 left-[var(--gutter)] right-[var(--gutter)] h-px bg-cream/10 motion-reduce:hidden lg:bottom-10">
         <div ref={bar} className="h-full origin-left scale-x-0 bg-ember" />
       </div>
     </section>
