@@ -118,6 +118,21 @@ export default function BeaverLook({ className }: { className?: string }) {
           redraw.current();
         } catch {
           if (ctrl.signal.aborted) return;
+          // Browsers without AVIF support (e.g. Safari before 16): show the
+          // resting frame as WebP instead of an empty space, and stop — the
+          // other frames are AVIF too.
+          if (i === CENTER) {
+            queue.length = 0;
+            try {
+              const res = await fetch("/beaver-sweep/look-099.webp?v=4", { signal: ctrl.signal });
+              store[CENTER] = await createImageBitmap(await res.blob());
+              setReady(true);
+              redraw.current();
+            } catch {
+              /* nothing more to try — the hero simply shows no beaver */
+            }
+            return;
+          }
         }
       }
     };

@@ -39,7 +39,7 @@ ${FAQ.map(({ q, a }) => `### ${q}\n\n${a}`).join("\n\n")}
 
 ## Pages
 
-- [Home](${absoluteUrl("/")}): services, sample work, process, about, FAQ and contact
+- [Home](${absoluteUrl("/")}): services, sample work, process, about, contact and FAQ
 - [Services](${absoluteUrl("/#services")})
 - [Portfolio](${absoluteUrl("/#portfolio")})
 - [About](${absoluteUrl("/#about")})

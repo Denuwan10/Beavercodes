@@ -22,13 +22,22 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const p = getProject((await params).slug);
   if (!p) return {};
   const title = `${p.title} — ${p.category}`;
-  const description = `${p.intro.split(". ")[0]}. Features, technology stack and process.`;
-  const image = `/work/${p.image}-${(p.widths ?? [800, 1600])[1]}.webp`;
+  // First sentence of the intro (without its own full stop), then the summary.
+  const description = `${p.intro.split(". ")[0].replace(/\.$/, "")}. Features, technology stack and process.`;
+  // 1200×630 JPEG: the share-preview size/format WhatsApp, Facebook, LinkedIn
+  // and X all display reliably (WebP previews often don't show in WhatsApp).
+  const image = `/work/og/${p.slug}.jpg`;
   return {
     title,
     description,
     alternates: { canonical: `/work/${p.slug}` },
-    openGraph: { type: "article", url: `/work/${p.slug}`, title, description, images: [{ url: image, alt: p.alt }] },
+    openGraph: {
+      type: "article",
+      url: `/work/${p.slug}`,
+      title,
+      description,
+      images: [{ url: image, width: 1200, height: 630, alt: p.alt }],
+    },
     twitter: { card: "summary_large_image", title, description, images: [image] },
   };
 }

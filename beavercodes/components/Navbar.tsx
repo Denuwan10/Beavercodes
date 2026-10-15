@@ -6,7 +6,7 @@ import Logo from "./Logo";
 import MagneticButton, { Arrow } from "./MagneticButton";
 import { SocialRow } from "./Socials";
 import { scrollToTarget, useLenis } from "@/hooks/useLenis";
-import { experience, STORY, useExperience } from "@/utils/store";
+import { experience, STORY, storyToProgress, useExperience } from "@/utils/store";
 import { cn } from "@/utils/math";
 
 const LINKS = [
@@ -19,7 +19,7 @@ const LINKS = [
 
 export default function Navbar() {
   const lenis = useLenis();
-  const siteMode = useExperience((s) => s.staticMode || s.progress >= STORY.revealAt - 0.06);
+  const siteMode = useExperience((s) => s.staticMode || s.progress >= storyToProgress(STORY.revealAt - 0.06));
   const loaded = useExperience((s) => s.loaded);
   const [solid, setSolid] = useState(false);
   const [open, setOpen] = useState(false);
@@ -39,14 +39,13 @@ export default function Navbar() {
 
   // Highlight the section in view.
   useEffect(() => {
-    // Active = the last section whose top has passed 40% of the viewport. At
-    // the very bottom the last link wins: Contact is short and sits above the
-    // footer, so it can never reach the middle of the screen on its own.
-    const ids = LINKS.slice(1).map((l) => l.id);
+    // Active = the last section whose top has passed 40% of the viewport.
+    // "faq" (after Contact, no menu link) is tracked too, so reading the FAQ
+    // highlights nothing rather than leaving "Contact" lit.
+    const ids = [...LINKS.slice(1).map((l) => l.id), "faq"];
     const onScroll = () => {
       const vh = window.innerHeight;
       if (window.scrollY < (experience.get().landingY || 0) + vh * 0.5) return setActiveId("home");
-      if (window.scrollY + vh >= document.documentElement.scrollHeight - 4) return setActiveId(ids[ids.length - 1]);
       let current = "home";
       for (const id of ids) {
         const el = document.getElementById(id);

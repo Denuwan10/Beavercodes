@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { experience } from "@/utils/store";
+import { experience, storyToProgress } from "@/utils/store";
 import { range } from "@/utils/math";
 
 const CHAPTERS = [
@@ -31,7 +31,7 @@ export default function IntroHud() {
         root.current.style.visibility = o <= 0 ? "hidden" : "visible";
       }
       if (cue.current) cue.current.style.opacity = String(1 - range(progress, 0.01, 0.06));
-      if (bar.current) bar.current.style.transform = `scaleX(${range(progress, 0, 0.8)})`;
+      if (bar.current) bar.current.style.transform = `scaleX(${range(progress, 0, storyToProgress(0.8))})`;
       CHAPTERS.forEach((c, i) => {
         const fadeIn = i === 0 ? 1 : range(p, c.from, c.from + 0.05);
         const fadeOut = 1 - range(p, c.to - 0.05, c.to);

@@ -4,6 +4,10 @@ out
 .vercel
 *.tsbuildinfo
 .env*.local
+# Any real env file (secrets: SMTP password, keys). Only the example is kept.
+.env
+.env.*
+!.env.example
 .DS_Store
 public/models/*.src.glb
 assets-src/*.src.glb

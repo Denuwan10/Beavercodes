@@ -9,7 +9,7 @@ import Preloader from "./Preloader";
 import IntroHud from "./IntroHud";
 import { useDeviceTier } from "@/hooks/useDeviceTier";
 import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect";
-import { experience, STORY, STORY_TIMELINE, useExperience } from "@/utils/store";
+import { experience, STORY, STORY_END, STORY_TIMELINE, storyToProgress, useExperience } from "@/utils/store";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -17,8 +17,12 @@ gsap.registerPlugin(ScrollTrigger);
 // only fetched on the client, after first paint.
 const BeaverScene = dynamic(() => import("./BeaverScene"), { ssr: false });
 
-/** How many viewport-heights of scrolling the cinematic intro lasts. */
-const PIN_LENGTH = 4.2;
+/**
+ * How many viewport-heights of scrolling the cinematic intro lasts: 4.2 per
+ * full story, cut at STORY_END — every beat keeps its pace, only the dead
+ * hold after the reveal is gone.
+ */
+const PIN_LENGTH = 4.2 * STORY_END;
 
 export default function Hero3D() {
   const profile = useDeviceTier();
@@ -30,7 +34,7 @@ export default function Hero3D() {
 
   const staticMode = !!profile && (profile.reducedMotion || !profile.webgl);
   // Keep rendering until both the scroll and the (scrub-lagged) story are past the dive.
-  const active = useExperience((s) => s.progress < 0.9 || s.story < 0.86);
+  const active = useExperience((s) => s.progress < storyToProgress(0.79) || s.story < 0.86);
   // The site starts "building itself" the moment it appears on the laptop display.
   const revealed = useExperience((s) => s.staticMode || s.story >= STORY.portalStart);
 
@@ -55,7 +59,8 @@ export default function Hero3D() {
           pin: true,
           pinSpacing: true,
           anticipatePin: 1,
-          scrub: 1.1,
+          // Inertia for the camera move, kept short so scrolling stays responsive.
+          scrub: 0.8,
           // Created after device detection, so make sure it is measured before
           // every trigger further down the page.
           refreshPriority: 10,
@@ -69,7 +74,7 @@ export default function Hero3D() {
             experience.set({
               progress: self.progress,
               // Where "Home" lives: just after the reveal completes.
-              landingY: Math.round(self.start + (self.end - self.start) * (STORY.revealAt + 0.06)),
+              landingY: Math.round(self.start + (self.end - self.start) * storyToProgress(STORY.revealAt + 0.06)),
             }),
         },
       });

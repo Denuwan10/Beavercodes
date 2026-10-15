@@ -8,10 +8,15 @@
  */
 export const BEAVER_MODEL = {
   // /models is served as immutable (next.config.ts) — bump ?v= whenever the file changes.
-  url: process.env.NEXT_PUBLIC_BEAVER_MODEL || "/models/beaver.glb?v=4",
+  url: process.env.NEXT_PUBLIC_BEAVER_MODEL || "/models/beaver.glb?v=5",
 
-  /** Draco / Meshopt decoding (gltf-transform optimize output). */
-  draco: true,
+  /**
+   * Mesh decoding. The model is Meshopt-compressed: its decoder ships inside
+   * three.js, so nothing is fetched from a third-party CDN (Draco needed
+   * Google's gstatic servers, and failed to decode in some WebKit builds).
+   * The previous Draco file is kept at assets-src/beaver.draco.backup.glb.
+   */
+  draco: false,
   meshopt: true,
 
   fit: {

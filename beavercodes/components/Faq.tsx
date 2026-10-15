@@ -11,7 +11,7 @@ export default function Faq() {
       <div className="container-x grid gap-12 lg:grid-cols-12 lg:gap-16">
         <div className="lg:col-span-5">
           <p className="eyebrow mb-8 flex items-center gap-3">
-            <span className="text-ember">(05)</span>
+            <span className="text-ember">(06)</span>
             <span className="h-px w-10 bg-cream/20" />
             FAQ
           </p>

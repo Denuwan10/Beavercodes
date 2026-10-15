@@ -209,7 +209,7 @@ const SERVICES: Service[] = [
   {
     title: "Web Development",
     lead: "Websites that work as hard as you do.",
-    text: "Modern responsive websites that create powerful online presence.",
+    text: "Modern, responsive websites that create a powerful online presence.",
     deliverables: ["Marketing sites", "E-commerce", "Web apps", "CMS & SEO"],
     Visual: WebVisual,
   },
@@ -334,7 +334,8 @@ export default function Services() {
                   </ul>
                   <div className="mt-6 md:mt-10">
                     <MagneticButton href="#contact" variant="ghost">
-                      Start a {s.title.split(" ")[0].toLowerCase()} project <Arrow />
+                      {/* "Digital Marketing" → "marketing", not "digital". */}
+                      Start a {s.title === "Digital Marketing" ? "marketing" : s.title.split(" ")[0].toLowerCase()} project <Arrow />
                     </MagneticButton>
                   </div>
                 </div>

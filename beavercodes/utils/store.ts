@@ -89,10 +89,21 @@ export const STORY = {
   revealAt: 0.8, // landing page fully owns the viewport
 } as const;
 
+/**
+ * Where the story (and the pinned scroll) ends. Nothing changes on screen
+ * after the light flash clears (~0.88), so the pin stops there — running on
+ * to 1 left a dead stretch where the revealed homepage just sat pinned and
+ * the first scroll seemed to do nothing.
+ */
+export const STORY_END = 0.88;
+
+/** Pin progress (0–1) at which the story reaches story-time `t`. */
+export const storyToProgress = (t: number) => Math.min(1, t / STORY_END);
+
 /** Beat boundaries and eases used by the scrubbed GSAP story timeline. */
 export const STORY_TIMELINE: Array<{ to: number; ease: string }> = [
   { to: 0.25, ease: "sine.inOut" }, // establishing → approach
   { to: 0.5, ease: "power2.inOut" }, // orbit behind the shoulder, settle on the laptop
   { to: 0.8, ease: "power3.in" }, // gather speed and get pulled into the screen
-  { to: 1, ease: "power2.out" }, // land softly on the homepage
+  { to: STORY_END, ease: "power2.out" }, // land softly on the homepage
 ];
