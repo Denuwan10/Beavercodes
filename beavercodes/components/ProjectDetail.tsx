@@ -3,6 +3,7 @@ import ProjectShot from "./ProjectShot";
 import MagneticButton, { Arrow } from "./MagneticButton";
 import { PROJECTS, type Project } from "@/utils/projects";
 import { SITE } from "@/utils/site";
+import { SERVICE_PAGES } from "@/utils/services";
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
@@ -29,6 +30,10 @@ export default function ProjectDetail({ p, mode }: { p: Project; mode: "page" | 
   const next = PROJECTS[(index + 1) % PROJECTS.length];
   const contactHref = overlay ? "#contact" : "/?section=contact";
   const TitleTag = overlay ? "h2" : "h1";
+  // Service pages that list this project as an example of their work.
+  const services = SERVICE_PAGES.filter((s) => s.related.includes(p.slug));
+  const pill =
+    "inline-flex rounded-full border border-cream/15 px-4 py-2 text-sm text-cream/85 transition-colors hover:border-ember hover:text-ember";
 
   const facts: [string, string][] = [
     ["Industry", p.industry],
@@ -245,6 +250,29 @@ export default function ProjectDetail({ p, mode }: { p: Project; mode: "page" | 
           </div>
         </div>
       </section>
+
+      {/* ---------- The services behind it (same pills as the service pages) ---------- */}
+      {services.length > 0 && (
+        <nav aria-label="Related services" className="container-x pb-12">
+          <p className="eyebrow mb-4">Services behind this project</p>
+          <ul className="flex flex-wrap gap-3">
+            {services.map((s) => (
+              <li key={s.slug}>
+                {overlay ? (
+                  // Opens the service overlay; Back returns to this project.
+                  <Link href={`/services/${s.slug}`} scroll={false} className={pill}>
+                    {s.name}
+                  </Link>
+                ) : (
+                  <a href={`/services/${s.slug}`} className={pill}>
+                    {s.name}
+                  </a>
+                )}
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
 
       {/* ---------- Previous / next ---------- */}
       <nav aria-label="More projects" className="container-x grid gap-4 pb-16 sm:grid-cols-2">

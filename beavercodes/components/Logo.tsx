@@ -6,13 +6,14 @@ const MARK_RATIO = 661 / 395;
 /**
  * BeaverCodes mascot mark (the beaver coding on a laptop). Size it with ONE
  * dimension class (e.g. `h-10`, or `w-1/2`); the other follows the artwork's
- * aspect ratio. Defaults to `h-8`. Source: public/brand/.
+ * aspect ratio. Defaults to `h-8`. Source: public/brand/ — the WebP (17 KB)
+ * is shown on the page; the PNG original is the logo in the structured data.
  */
 export function LogoMark({ className }: { className?: string }) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src="/brand/beaver-mark.png"
+      src="/brand/beaver-mark.webp"
       alt=""
       aria-hidden
       draggable={false}

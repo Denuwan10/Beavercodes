@@ -13,6 +13,8 @@ type Props = {
   delay?: number;
   /** When provided, animation is controlled externally instead of on view. */
   show?: boolean;
+  /** Render already revealed (server HTML): no entrance on mount. */
+  startShown?: boolean;
 };
 
 const container: Variants = {
@@ -27,7 +29,7 @@ const line: Variants = {
 };
 
 /** Masked line-by-line text reveal. */
-export default function RevealText({ lines, as = "h2", className, lineClassName, delay = 0, show }: Props) {
+export default function RevealText({ lines, as = "h2", className, lineClassName, delay = 0, show, startShown }: Props) {
   // All motion text elements share the same prop surface; narrow to one for JSX.
   const Tag = motion[as] as typeof motion.h2;
   const controlled = show !== undefined;
@@ -36,7 +38,7 @@ export default function RevealText({ lines, as = "h2", className, lineClassName,
       className={className}
       variants={container}
       custom={delay}
-      initial="hidden"
+      initial={startShown ? false : "hidden"}
       {...(controlled
         ? { animate: show ? "show" : "hidden" }
         : { whileInView: "show", viewport: { once: true, margin: "-12% 0px" } })}

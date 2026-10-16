@@ -24,13 +24,21 @@ export type Project = {
   bg: string;
   /** Card shot base name in /public/work. */
   image: string;
-  /** Pixel widths of the two card files; default [800, 1600]. */
+  /** Width suffixes in the two card file names; default [800, 1600]. */
   widths?: [number, number];
+  /** Actual pixel size [width, height] of the two card files (srcset, width/height). */
+  shot: { sm: [number, number]; lg: [number, number] };
   /** Transparent cut-out that floats on the stage (e.g. phones). */
   cutout?: boolean;
   alt: string;
 
   // ---- Project page ----
+  /** Search title; the layout adds " | BeaverCodes". */
+  metaTitle: string;
+  /** Search description, under ~155 characters. */
+  metaDescription: string;
+  /** Last significant content change (sitemap lastmod), YYYY-MM-DD. */
+  updated: string;
   kind: "Concept project" | "Client project";
   year: string;
   industry: string;
@@ -68,7 +76,12 @@ export const PROJECTS: Project[] = [
     tags: ["Dashboard", "UI/UX", "React"],
     bg: "radial-gradient(90% 80% at 72% 18%, rgba(120,130,255,0.32), transparent 62%), linear-gradient(150deg, #24264a 0%, #12131f 75%)",
     image: "edupro",
+    shot: { sm: [800, 533], lg: [1536, 1024] },
     alt: "EduPro e-learning dashboard with course cards, progress stats, a calendar and upcoming activities",
+    metaTitle: "EduPro: E-learning Dashboard Web App (Concept)",
+    metaDescription:
+      "EduPro is a concept e-learning dashboard: one calm home base for courses, progress and deadlines. See its features, tech stack and process.",
+    updated: "2026-10-16",
     kind: "Concept project",
     year: "2026",
     industry: "Education & e-learning",
@@ -125,7 +138,12 @@ export const PROJECTS: Project[] = [
     image: "fingrow-phones",
     widths: [480, 808],
     cutout: true,
+    shot: { sm: [480, 513], lg: [808, 863] },
     alt: "FinGrow mobile app on two phones: the home screen with an active loan overview, and the apply-for-a-loan screen",
+    metaTitle: "FinGrow: Fintech Loan Mobile App (Concept)",
+    metaDescription:
+      "FinGrow is a concept fintech app for small-business loans: apply in three steps, see what you'll pay and manage repayments from your phone.",
+    updated: "2026-10-16",
     kind: "Concept project",
     year: "2026",
     industry: "Finance & micro-lending",
@@ -181,7 +199,12 @@ export const PROJECTS: Project[] = [
     tags: ["E-commerce", "Product pages", "Next.js"],
     bg: "radial-gradient(90% 80% at 70% 22%, rgba(150,175,135,0.28), transparent 62%), linear-gradient(150deg, #232a22 0%, #121511 75%)",
     image: "harlow",
+    shot: { sm: [800, 450], lg: [1600, 900] },
     alt: "HARLOW fashion store: homepage with a Modern Essentials hero and categories, and an Essential Hoodie product page",
+    metaTitle: "HARLOW: Menswear E-commerce Store (Concept)",
+    metaDescription:
+      "HARLOW is a concept online store for a modern menswear label: a calm, editorial shopping experience with product pages built to turn browsing into buying.",
+    updated: "2026-10-16",
     kind: "Concept project",
     year: "2026",
     industry: "Fashion & retail",
@@ -234,7 +257,12 @@ export const PROJECTS: Project[] = [
     tags: ["Website", "Online ordering", "Booking"],
     bg: "radial-gradient(90% 80% at 30% 18%, rgba(255,150,70,0.28), transparent 62%), linear-gradient(150deg, #3a2616 0%, #18110c 75%)",
     image: "beanory",
+    shot: { sm: [800, 600], lg: [1448, 1086] },
     alt: "Beanory coffee shop website with a latte hero, signature drinks menu, testimonials and table booking",
+    metaTitle: "Beanory: Coffee Shop Website (Concept)",
+    metaDescription:
+      "Beanory is a concept website for a specialty coffee shop that shows the menu, takes orders and fills tables. See its features, tech stack and process.",
+    updated: "2026-10-16",
     kind: "Concept project",
     year: "2026",
     industry: "Food & hospitality",

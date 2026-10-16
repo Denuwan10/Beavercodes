@@ -7,12 +7,26 @@ import { useLenis } from "@/hooks/useLenis";
 import MagneticButton, { Arrow } from "./MagneticButton";
 
 /**
- * A project opened from a portfolio card: a full-screen layer over the home
+ * A project (or service) opened from the home page: a full-screen layer over the home
  * page, which stays mounted — and exactly where it was — underneath. Closing
  * (All work, ✕, Escape or the browser's Back) is just a history step back, so
  * the home page reappears instantly: no reload, no preloader, no intro.
  */
-export default function ProjectOverlay({ title, children }: { title: string; children: React.ReactNode }) {
+export default function ProjectOverlay({
+  title,
+  children,
+  backLabel = "All work",
+  closeLabel = "Close project",
+  labelledBy = "project-title",
+}: {
+  title: string;
+  children: React.ReactNode;
+  /** The back button's text; service pages use "All services". */
+  backLabel?: string;
+  closeLabel?: string;
+  /** id of the heading that names the dialog. */
+  labelledBy?: string;
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const lenis = useLenis();
@@ -67,7 +81,7 @@ export default function ProjectOverlay({ title, children }: { title: string; chi
     <motion.div
       role="dialog"
       aria-modal="true"
-      aria-labelledby="project-title"
+      aria-labelledby={labelledBy}
       className="fixed inset-0 z-[70] bg-ink"
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
@@ -86,7 +100,7 @@ export default function ProjectOverlay({ title, children }: { title: string; chi
               <span aria-hidden className="transition-transform duration-300 group-hover:-translate-x-1">
                 ←
               </span>
-              All work
+              {backLabel}
             </button>
             <span className="hidden truncate font-semibold tracking-tight sm:block">{title}</span>
             <div className="flex items-center gap-3">
@@ -98,7 +112,7 @@ export default function ProjectOverlay({ title, children }: { title: string; chi
               <button
                 type="button"
                 onClick={close}
-                aria-label="Close project"
+                aria-label={closeLabel}
                 className="relative flex h-11 w-11 items-center justify-center rounded-full border border-cream/20 transition-colors hover:border-ember hover:text-ember"
               >
                 <span className="absolute h-px w-4 rotate-45 bg-current" />

@@ -19,12 +19,17 @@ export default function ProjectShot({
   className?: string;
 }) {
   const [sm, lg] = p.widths ?? [800, 1600];
+  const { sm: smSize, lg: lgSize } = p.shot;
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
       src={`/work/${p.image}-${lg}.webp`}
-      srcSet={`/work/${p.image}-${sm}.webp ${sm}w, /work/${p.image}-${lg}.webp ${lg}w`}
+      // Descriptors are the files' real widths (the name suffix is nominal).
+      srcSet={`/work/${p.image}-${sm}.webp ${smSize[0]}w, /work/${p.image}-${lg}.webp ${lgSize[0]}w`}
       sizes={sizes}
+      // Intrinsic size: reserves the aspect ratio before the file arrives.
+      width={lgSize[0]}
+      height={lgSize[1]}
       alt={p.alt}
       loading={priority ? "eager" : "lazy"}
       fetchPriority={priority ? "high" : undefined}

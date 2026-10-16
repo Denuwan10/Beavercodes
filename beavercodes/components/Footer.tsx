@@ -1,10 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import Logo from "./Logo";
 import { CHANNELS, SocialIcon } from "./Socials";
 import { SITE } from "@/utils/site";
 import { SERVICE_PAGES } from "@/utils/services";
 import { useLenis } from "@/hooks/useLenis";
+import CookieSettingsButton from "./CookieSettingsButton";
+import { GA_ID } from "@/utils/consent";
 
 
 const NAV = [
@@ -58,6 +61,16 @@ export default function Footer({ base = "" }: { base?: string }) {
                   </a>
                 </li>
               ))}
+              <li>
+                <a href="/privacy-policy" className="text-cream/80 transition-colors hover:text-ember">
+                  Privacy Policy
+                </a>
+              </li>
+              {GA_ID && (
+                <li>
+                  <CookieSettingsButton className="text-cream/80 transition-colors hover:text-ember" />
+                </li>
+              )}
             </ul>
           </nav>
           <nav className="md:col-span-3" aria-label="Services">
@@ -65,9 +78,17 @@ export default function Footer({ base = "" }: { base?: string }) {
             <ul className="space-y-2">
               {SERVICE_PAGES.map((s) => (
                 <li key={s.slug}>
-                  <a href={`/services/${s.slug}`} className="text-cream/80 transition-colors hover:text-ember">
-                    {s.name}
-                  </a>
+                  {base ? (
+                    <a href={`/services/${s.slug}`} className="text-cream/80 transition-colors hover:text-ember">
+                      {s.name}
+                    </a>
+                  ) : (
+                    // Home page: an in-app link, so the service opens as an
+                    // overlay (app/@modal) and "All services" returns right here.
+                    <Link href={`/services/${s.slug}`} scroll={false} className="text-cream/80 transition-colors hover:text-ember">
+                      {s.name}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>

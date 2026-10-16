@@ -252,6 +252,13 @@ export default function Contact() {
                       </p>
                     )}
                   </div>
+                  <p className="text-sm text-mute md:col-span-2">
+                    We use the details you send to reply to your enquiry. See our{" "}
+                    <a href="/privacy-policy" className="text-cream/80 underline underline-offset-4 hover:text-ember">
+                      Privacy Policy
+                    </a>
+                    .
+                  </p>
                 </motion.form>
               )}
             </AnimatePresence>

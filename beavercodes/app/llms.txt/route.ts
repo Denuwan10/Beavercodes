@@ -21,6 +21,8 @@ export function GET() {
 - Phone / WhatsApp: ${SITE.phone} (${SITE.whatsapp})
 ${SITE.socials.map((s) => `- ${s.label}: ${s.href}`).join("\n")}
 - Tagline: ${SITE.tagline}
+- Markets: worldwide, with a focus on Sri Lanka, the United States and the United Kingdom
+- In numbers: ${SITE.stats.map((s) => `${s.value}${s.suffix} ${s.label.toLowerCase()}`).join(", ")}
 
 ## Services
 
@@ -46,6 +48,7 @@ ${FAQ.map(({ q, a }) => `### ${q}\n\n${a}`).join("\n\n")}
 - [About](${absoluteUrl("/#about")})
 - [FAQ](${absoluteUrl("/#faq")})
 - [Contact](${absoluteUrl("/#contact")})
+- [Privacy Policy](${absoluteUrl("/privacy-policy")})
 `;
   return new Response(body, {
     headers: { "Content-Type": "text/markdown; charset=utf-8", "Cache-Control": "public, max-age=3600" },

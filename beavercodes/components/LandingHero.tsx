@@ -5,15 +5,29 @@ import { animate, cubicBezier, motion } from "framer-motion";
 import RevealText from "./RevealText";
 import BeaverLook from "./BeaverLook";
 import MagneticButton, { Arrow } from "./MagneticButton";
+import { SITE } from "@/utils/site";
 
-const STATS = [
-  { value: 50, suffix: "+", label: "Projects Delivered" },
-  { value: 30, suffix: "+", label: "Happy Clients" },
-  { value: 4, suffix: "", label: "Core Services" },
-];
+const STATS = SITE.stats;
 
-function CountUp({ to, run, delay = 0 }: { to: number; run: boolean; delay?: number }) {
-  const [v, setV] = useState(0);
+/**
+ * True once the app has hydrated. The server HTML (and the first client
+ * render that hydrates it) shows the hero finished — real figures, visible
+ * text — so search engines and no-JS readers get the actual content. Later
+ * mounts (e.g. the reduced-motion layout) animate in as before.
+ */
+let appHydrated = false;
+function useHydrated() {
+  const [hydrated, setHydrated] = useState(appHydrated);
+  useEffect(() => {
+    appHydrated = true;
+    setHydrated(true);
+  }, []);
+  return hydrated;
+}
+
+function CountUp({ to, run, delay = 0, fromZero }: { to: number; run: boolean; delay?: number; fromZero: boolean }) {
+  // Server HTML shows the final figure; the count-up then runs from 0 on reveal.
+  const [v, setV] = useState(fromZero ? 0 : to);
   useEffect(() => {
     if (!run) {
       setV(0);
@@ -32,8 +46,8 @@ function CountUp({ to, run, delay = 0 }: { to: number; run: boolean; delay?: num
 
 const easeOutExpo = cubicBezier(0.16, 1, 0.3, 1);
 
-const fade = (show: boolean, delay: number) => ({
-  initial: { opacity: 0, y: 24 },
+const fade = (show: boolean, startShown: boolean, delay: number) => ({
+  initial: startShown ? (false as const) : { opacity: 0, y: 24 },
   animate: show ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 },
   transition: { duration: 1, delay: show ? delay : 0, ease: easeOutExpo },
 });
@@ -43,6 +57,10 @@ const fade = (show: boolean, delay: number) => ({
  * 3D scene, then becomes the full page — same markup throughout.
  */
 export default function LandingHero({ revealed }: { revealed: boolean }) {
+  const hydrated = useHydrated();
+  // Until hydration: the finished hero (see useHydrated). After: the intro's reveal.
+  const ssr = !hydrated;
+  const show = revealed || ssr;
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden bg-ink text-cream">
       {/* Atmosphere — a single warm glow, nothing else competing with the type */}
@@ -56,7 +74,7 @@ export default function LandingHero({ revealed }: { revealed: boolean }) {
         <div className="grid flex-1 items-center gap-y-6 lg:grid-cols-12 lg:gap-x-10">
           {/* The VR beaver: turns its head to follow the cursor */}
           <motion.div
-            {...fade(revealed, 0.3)}
+            {...fade(show, ssr,0.3)}
             className="mx-auto h-[min(20vh,12rem)] w-full max-w-[22rem] max-lg:[@media(max-height:700px)]:h-[15vh] lg:col-span-5 lg:mx-0 lg:h-[min(68vh,40rem)] lg:max-w-none"
           >
             <BeaverLook className="h-full w-full" />
@@ -65,7 +83,8 @@ export default function LandingHero({ revealed }: { revealed: boolean }) {
           <div className="flex flex-col justify-center lg:col-span-7">
           <RevealText
             as="h1"
-            show={revealed}
+            show={show}
+            startShown={ssr}
             delay={0.1}
             className="text-[clamp(2.4rem,4.4vw,5.25rem)] font-semibold leading-[1.02] tracking-[-0.04em]"
             lines={[
@@ -77,13 +96,13 @@ export default function LandingHero({ revealed }: { revealed: boolean }) {
           />
 
           <motion.p
-            {...fade(revealed, 0.45)}
+            {...fade(show, ssr,0.45)}
             className="mt-[clamp(1.25rem,3.5vh,2.25rem)] max-w-[34ch] text-base leading-relaxed text-mute md:text-lg"
           >
             Web design, software and mobile app development in Sri Lanka, crafted to help your business grow.
           </motion.p>
 
-          <motion.div {...fade(revealed, 0.6)} className="mt-[clamp(1.75rem,4.5vh,3rem)] flex flex-wrap items-center gap-x-8 gap-y-4">
+          <motion.div {...fade(show, ssr,0.6)} className="mt-[clamp(1.75rem,4.5vh,3rem)] flex flex-wrap items-center gap-x-8 gap-y-4">
             <MagneticButton href="#contact">
               Start a project <Arrow />
             </MagneticButton>
@@ -103,14 +122,14 @@ export default function LandingHero({ revealed }: { revealed: boolean }) {
         {/* Phones: one compact 3-column row (number above label) — wrapping onto
             two rows pushed the stats past the bottom of the screen. */}
         <motion.dl
-          {...fade(revealed, 0.75)}
+          {...fade(show, ssr,0.75)}
           className="hairline grid grid-cols-3 gap-3 border-t pt-4 sm:flex sm:flex-wrap sm:gap-x-10 sm:gap-y-3 sm:pt-5 md:gap-x-16"
         >
           {STATS.map((s, i) => (
             <div key={s.label} className="flex flex-col-reverse gap-1 sm:flex-row-reverse sm:items-baseline sm:justify-end sm:gap-3">
               <dt className="text-xs leading-tight text-mute sm:text-sm">{s.label}</dt>
               <dd className="text-xl font-semibold tabular-nums tracking-tight md:text-2xl">
-                <CountUp to={s.value} run={revealed} delay={0.9 + i * 0.12} />
+                <CountUp to={s.value} run={revealed} delay={0.9 + i * 0.12} fromZero={hydrated} />
                 <span className="text-ember">{s.suffix}</span>
               </dd>
             </div>

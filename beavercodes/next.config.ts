@@ -8,6 +8,19 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ["@react-three/drei", "framer-motion", "gsap"],
   },
+  async redirects() {
+    // One canonical host: www → apex in a single permanent hop (http → https
+    // is done by Vercel before this). Mirrors the Vercel Domains setting, so
+    // the rule holds even if the dashboard redirect is ever removed.
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.beavercodes.com" }],
+        destination: "https://beavercodes.com/:path*",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

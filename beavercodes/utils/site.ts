@@ -3,8 +3,9 @@
  * data (JSON-LD), the sitemap/robots files and /llms.txt — so search engines
  * and AI assistants all read the same, consistent description.
  *
- * Set NEXT_PUBLIC_SITE_URL to the live domain (e.g. on Netlify:
- * Site configuration → Environment variables), without a trailing slash.
+ * Set NEXT_PUBLIC_SITE_URL to the live domain (on Vercel: Project → Settings
+ * → Environment Variables), without a trailing slash. The canonical host is
+ * the apex domain; www redirects to it (next.config.ts).
  */
 export const SITE = {
   name: "BeaverCodes",
@@ -65,19 +66,53 @@ export const SITE = {
     { name: "Develop", text: "Build reliable solutions." },
     { name: "Grow", text: "Help businesses scale." },
   ],
+  /** Verified figures (confirmed by BeaverCodes) — shown in the home hero. */
+  stats: [
+    { value: 50, suffix: "+", label: "Projects Delivered" },
+    { value: 30, suffix: "+", label: "Happy Clients" },
+    { value: 4, suffix: "", label: "Core Services" },
+  ],
   /**
-   * Official social profiles — shown in the footer and contact section, and
-   * published as `sameAs` links that tie the brand together for Google and AI
-   * assistants. (Tracking parameters from the share links removed.)
+   * Social channels, shown in the footer and contact section. `profile: true`
+   * marks a real profile page, published as Organization `sameAs`. The
+   * Facebook link is a share link (it doesn't open for logged-out visitors),
+   * so it stays a visible link only — replace it with the Page's own URL
+   * (facebook.com/<page-name>) and set `profile: true` once known.
    */
   socials: [
-    { label: "Facebook", href: "https://www.facebook.com/share/18d38m2u52/" },
-    { label: "Instagram", href: "https://www.instagram.com/beavercodes" },
-    { label: "TikTok", href: "https://www.tiktok.com/@beavercodes" },
+    { label: "Facebook", href: "https://www.facebook.com/share/1PzS3KuK2p/", profile: false },
+    { label: "Instagram", href: "https://www.instagram.com/beavercodes", profile: true },
+    { label: "TikTok", href: "https://www.tiktok.com/@beavercodes", profile: true },
   ],
+  /**
+   * Legal details for the privacy policy. `null` = not yet confirmed: the
+   * policy leaves that row out. Never guess these.
+   */
+  legal: {
+    name: null as string | null,
+    address: null as string | null,
+    /** Where privacy requests go — the verified business inbox. */
+    privacyEmail: "hello@beavercodes.com",
+  },
 } as const;
 
-/** Profile URLs for structured data (`sameAs`). */
-export const SAME_AS = SITE.socials.map((s) => s.href);
+/** Profile URLs for structured data (`sameAs`) — real profile pages only. */
+export const SAME_AS = SITE.socials.filter((s) => s.profile).map((s) => s.href);
+
+/** Markets served (structured data `areaServed`): worldwide, focus on these. */
+export const AREA_SERVED = [
+  { "@type": "Country", name: "Sri Lanka" },
+  { "@type": "Country", name: "United States" },
+  { "@type": "Country", name: "United Kingdom" },
+  "Worldwide",
+];
+
+/** Default 1200×630 share card (app/opengraph-image.jpg) for pages without their own. */
+export const SHARE_IMAGE = {
+  url: "/opengraph-image.jpg",
+  width: 1200,
+  height: 630,
+  alt: "BeaverCodes logo: a beaver working on a laptop, with the BeaverCodes wordmark",
+};
 
 export const absoluteUrl = (path = "/") => `${SITE.url}${path.startsWith("/") ? path : `/${path}`}`;

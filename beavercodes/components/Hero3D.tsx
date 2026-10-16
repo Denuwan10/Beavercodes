@@ -89,6 +89,13 @@ export default function Hero3D() {
     return () => ctx.revert();
   }, [profile, staticMode]);
 
+  // The server HTML leaves the hero visible (under the preloader), so its
+  // heading, text and figures are readable without JavaScript. Hide it again
+  // before the first client paint; the 3D scene reveals it as before.
+  useIsomorphicLayoutEffect(() => {
+    if (portal.current) portal.current.style.visibility = "hidden";
+  }, []);
+
   // When the 3D loop is paused past the intro, pin the portal to its final state.
   useEffect(() => {
     if (staticMode) return;
@@ -140,7 +147,7 @@ export default function Hero3D() {
         <div
           ref={portal}
           className="absolute left-0 top-0 h-full w-full origin-top-left overflow-hidden will-change-transform"
-          style={{ visibility: "hidden", pointerEvents: "none", backfaceVisibility: "hidden" }}
+          style={{ pointerEvents: "none", backfaceVisibility: "hidden" }}
         >
           <LandingHero revealed={revealed} />
         </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -346,14 +347,17 @@ export default function Services() {
                       Start a {s.title === "Digital Marketing" ? "marketing" : s.title.split(" ")[0].toLowerCase()} project <Arrow />
                     </MagneticButton>
                     {/* The service's own page — more detail, and an internal
-                        link Google follows to the page written for that search. */}
-                    <a
+                        link Google follows to the page written for that search.
+                        In-app link: opens as an overlay over this page, so
+                        "All services" returns right back here. */}
+                    <Link
                       href={`/services/${SERVICE_SLUGS[s.title]}`}
+                      scroll={false}
                       className="group/more inline-flex items-center gap-1.5 text-sm font-semibold text-cream/80 transition-colors hover:text-ember"
                     >
                       Learn more<span className="sr-only"> about {s.title.toLowerCase()}</span>
                       <span aria-hidden className="transition-transform duration-300 group-hover/more:translate-x-1">→</span>
-                    </a>
+                    </Link>
                   </div>
                 </div>
                 {/* Phones/tablets: the illustration fills whatever height the

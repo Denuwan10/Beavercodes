@@ -29,12 +29,15 @@ export type ServicePage = {
   /** Portfolio projects to link to (slugs from utils/projects.ts). */
   related: string[];
   faq: { q: string; a: string }[];
+  /** Last significant content change (sitemap lastmod), YYYY-MM-DD. */
+  updated: string;
 };
 
 export const SERVICE_PAGES: ServicePage[] = [
   {
     slug: "web-development",
     name: "Web Development",
+    updated: "2026-10-16",
     metaTitle: "Web Development Company in Sri Lanka | BeaverCodes",
     metaDescription:
       "Custom website design and development in Sri Lanka — fast, mobile-friendly business websites, e-commerce stores and web apps built with Next.js and SEO in mind.",
@@ -81,6 +84,7 @@ export const SERVICE_PAGES: ServicePage[] = [
   {
     slug: "software-development",
     name: "Software Development",
+    updated: "2026-10-16",
     metaTitle: "Custom Software Development in Sri Lanka | BeaverCodes",
     metaDescription:
       "Custom software development in Sri Lanka — business systems, ERP and CRM, SaaS platforms, APIs and integrations built around how your business actually works.",
@@ -126,9 +130,10 @@ export const SERVICE_PAGES: ServicePage[] = [
   {
     slug: "mobile-app-development",
     name: "Mobile App Development",
+    updated: "2026-10-16",
     metaTitle: "Mobile App Development Company in Sri Lanka | BeaverCodes",
     metaDescription:
-      "iOS and Android app development in Sri Lanka — cross-platform apps with React Native and Flutter, from design and development to App Store and Google Play launch.",
+      "iOS and Android app development in Sri Lanka — React Native and Flutter apps, from design and development to App Store and Google Play launch.",
     keywords: [
       "mobile app development company in Sri Lanka",
       "iOS and Android app development Sri Lanka",
@@ -171,6 +176,7 @@ export const SERVICE_PAGES: ServicePage[] = [
   {
     slug: "digital-marketing",
     name: "Digital Marketing",
+    updated: "2026-10-16",
     metaTitle: "Digital Marketing & SEO in Sri Lanka | BeaverCodes",
     metaDescription:
       "Digital marketing in Sri Lanka — SEO, social media marketing, Google and Meta ads and analytics that bring more customers to your website.",

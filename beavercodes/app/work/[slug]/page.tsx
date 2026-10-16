@@ -21,12 +21,13 @@ type Params = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const p = getProject((await params).slug);
   if (!p) return {};
-  const title = `${p.title} — ${p.category}`;
-  // First sentence of the intro (without its own full stop), then the summary.
-  const description = `${p.intro.split(". ")[0].replace(/\.$/, "")}. Features, technology stack and process.`;
+  // Hand-written per project (utils/projects.ts); the layout template adds the brand.
+  const title = p.metaTitle;
+  const shareTitle = `${p.metaTitle} | ${SITE.name}`;
+  const description = p.metaDescription;
   // 1200×630 JPEG: the share-preview size/format WhatsApp, Facebook, LinkedIn
   // and X all display reliably (WebP previews often don't show in WhatsApp).
-  const image = `/work/og/${p.slug}.jpg`;
+  const image = { url: `/work/og/${p.slug}.jpg`, width: 1200, height: 630, alt: p.alt };
   return {
     title,
     description,
@@ -34,11 +35,13 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     openGraph: {
       type: "article",
       url: `/work/${p.slug}`,
-      title,
+      siteName: SITE.name,
+      locale: "en_US",
+      title: shareTitle,
       description,
-      images: [{ url: image, width: 1200, height: 630, alt: p.alt }],
+      images: [image],
     },
-    twitter: { card: "summary_large_image", title, description, images: [image] },
+    twitter: { card: "summary_large_image", title: shareTitle, description, images: [image] },
   };
 }
 
@@ -58,6 +61,7 @@ export default async function ProjectPage({ params }: Params) {
         url: absoluteUrl(`/work/${p.slug}`),
         image: absoluteUrl(`/work/${p.image}-${(p.widths ?? [800, 1600])[1]}.webp`),
         dateCreated: p.year,
+        dateModified: p.updated,
         genre: p.industry,
         keywords: [...p.tags, ...p.stack.flatMap((s) => s.items)].join(", "),
         creator: { "@id": `${SITE.url}/#organization` },
