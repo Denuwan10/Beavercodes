@@ -14,23 +14,27 @@ export const SITE = {
   phone: "+94 74 077 3291",
   whatsapp: "https://wa.me/94740773291",
   tagline: "Build • Develop • Grow",
-  /** ~150 characters: used as the meta description. */
+  /** Where the business is based / serves (local SEO). */
+  country: "Sri Lanka",
+  countryCode: "LK",
+  /** ~150–160 characters: used as the meta description. */
   description:
-    "BeaverCodes is a digital agency that builds websites, custom software and mobile apps, and runs digital marketing that helps businesses grow online.",
+    "Web development company in Sri Lanka building fast websites, custom software and iOS/Android apps, plus SEO and digital marketing that grow businesses.",
   /** A fuller, plain-language summary for AI assistants and rich results. */
   summary:
-    "BeaverCodes is a digital agency (a \"digital workshop\") that designs and builds modern websites, custom business software and iOS/Android mobile apps, and runs digital marketing — SEO, social media, paid campaigns and analytics. Every project follows the same four steps: Discover, Design, Develop and Grow.",
+    "BeaverCodes is a web, software and mobile app development company based in Sri Lanka, working with businesses in Sri Lanka and worldwide. It designs and builds modern websites, e-commerce stores, custom business software and iOS/Android apps, and runs digital marketing — SEO, social media, paid campaigns and analytics. Every project follows the same four steps: Discover, Design, Develop and Grow.",
   keywords: [
-    "web development agency",
-    "website design",
+    "web development company in Sri Lanka",
+    "website design Sri Lanka",
+    "software development company in Sri Lanka",
+    "mobile app development Sri Lanka",
+    "digital marketing agency Sri Lanka",
+    "SEO services Sri Lanka",
+    "e-commerce website development",
     "custom software development",
-    "mobile app development",
-    "iOS and Android apps",
-    "React Native",
-    "Next.js websites",
-    "e-commerce websites",
-    "digital marketing",
-    "SEO services",
+    "iOS and Android app development",
+    "Next.js developers",
+    "3D interactive websites",
     "BeaverCodes",
   ],
   services: [

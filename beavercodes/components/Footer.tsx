@@ -2,6 +2,8 @@
 
 import Logo from "./Logo";
 import { CHANNELS, SocialIcon } from "./Socials";
+import { SITE } from "@/utils/site";
+import { SERVICE_PAGES } from "@/utils/services";
 import { useLenis } from "@/hooks/useLenis";
 
 
@@ -34,13 +36,14 @@ export default function Footer({ base = "" }: { base?: string }) {
       </p>
       <div className="container-x relative">
         <div className="grid gap-8 border-b border-cream/10 pb-8 md:grid-cols-12">
-          <div className="md:col-span-5">
+          <div className="md:col-span-4">
             <Logo className="[&_img]:h-14 [&>span]:text-2xl" />
             <p className="mt-4 max-w-xs text-mute">
               A digital workshop crafting websites, software, mobile apps and marketing that help businesses grow.
             </p>
+            <p className="mt-3 text-sm text-cream/70">Based in {SITE.country} · working with clients worldwide</p>
           </div>
-          <nav className="md:col-span-3" aria-label="Footer">
+          <nav className="md:col-span-2" aria-label="Footer">
             <p className="eyebrow mb-4">Explore</p>
             <ul className="space-y-2">
               {NAV.map((n) => (
@@ -57,7 +60,19 @@ export default function Footer({ base = "" }: { base?: string }) {
               ))}
             </ul>
           </nav>
-          <div className="md:col-span-2">
+          <nav className="md:col-span-3" aria-label="Services">
+            <p className="eyebrow mb-4">Services</p>
+            <ul className="space-y-2">
+              {SERVICE_PAGES.map((s) => (
+                <li key={s.slug}>
+                  <a href={`/services/${s.slug}`} className="text-cream/80 transition-colors hover:text-ember">
+                    {s.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          <div className="md:col-span-3">
             <p className="eyebrow mb-4">Follow</p>
             <ul className="space-y-2">
               {CHANNELS.map((s) => (
@@ -75,18 +90,15 @@ export default function Footer({ base = "" }: { base?: string }) {
               ))}
             </ul>
           </div>
-          <div className="md:col-span-2 md:text-right">
-            <button
-              onClick={() => (lenis ? lenis.scrollTo(0, { duration: 3 }) : window.scrollTo({ top: 0, behavior: "smooth" }))}
-              className="eyebrow inline-flex items-center gap-2 text-cream transition-colors hover:text-ember"
-            >
-              Back to the workshop ↑
-            </button>
-          </div>
         </div>
-        <div className="flex flex-col justify-between gap-4 py-6 text-sm text-mute md:flex-row">
-          <p>© {new Date().getFullYear()} BeaverCodes. All rights reserved.</p>
-          <p>Build • Develop • Grow</p>
+        <div className="flex flex-col justify-between gap-4 py-6 text-sm text-mute md:flex-row md:items-center">
+          <p>© {new Date().getFullYear()} BeaverCodes. All rights reserved. · Build • Develop • Grow</p>
+          <button
+            onClick={() => (lenis ? lenis.scrollTo(0, { duration: 3 }) : window.scrollTo({ top: 0, behavior: "smooth" }))}
+            className="eyebrow inline-flex items-center gap-2 self-start text-cream transition-colors hover:text-ember md:self-auto"
+          >
+            Back to the workshop ↑
+          </button>
         </div>
       </div>
     </footer>

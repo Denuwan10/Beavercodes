@@ -1,6 +1,7 @@
 import { SITE, absoluteUrl } from "@/utils/site";
 import { FAQ } from "@/utils/faq";
 import { PROJECTS } from "@/utils/projects";
+import { SERVICE_PAGES } from "@/utils/services";
 
 /**
  * /llms.txt — a plain Markdown brief for AI assistants and answer engines
@@ -23,7 +24,7 @@ ${SITE.socials.map((s) => `- ${s.label}: ${s.href}`).join("\n")}
 
 ## Services
 
-${SITE.services.map((s) => `- **${s.name}**: ${s.description} Includes: ${s.offers.join(", ")}.`).join("\n")}
+${SERVICE_PAGES.map((s) => `- [${s.name}](${absoluteUrl(`/services/${s.slug}`)}): ${s.metaDescription} Includes: ${s.offers.map((o) => o.title).join(", ")}.`).join("\n")}
 
 ## How we work
 

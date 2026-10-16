@@ -80,7 +80,7 @@ export default function LandingHero({ revealed }: { revealed: boolean }) {
             {...fade(revealed, 0.45)}
             className="mt-[clamp(1.25rem,3.5vh,2.25rem)] max-w-[34ch] text-base leading-relaxed text-mute md:text-lg"
           >
-            Websites, software and apps, crafted to help your business grow.
+            Web design, software and mobile app development in Sri Lanka, crafted to help your business grow.
           </motion.p>
 
           <motion.div {...fade(revealed, 0.6)} className="mt-[clamp(1.75rem,4.5vh,3rem)] flex flex-wrap items-center gap-x-8 gap-y-4">

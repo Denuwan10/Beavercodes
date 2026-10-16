@@ -205,6 +205,14 @@ function MarketingVisual() {
   );
 }
 
+/** Each card's own page (app/services/[slug], content in utils/services.ts). */
+const SERVICE_SLUGS: Record<string, string> = {
+  "Web Development": "web-development",
+  "Software Development": "software-development",
+  "Mobile Apps": "mobile-app-development",
+  "Digital Marketing": "digital-marketing",
+};
+
 const SERVICES: Service[] = [
   {
     title: "Web Development",
@@ -332,11 +340,20 @@ export default function Services() {
                       </li>
                     ))}
                   </ul>
-                  <div className="mt-6 md:mt-10">
+                  <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 md:mt-10">
                     <MagneticButton href="#contact" variant="ghost">
                       {/* "Digital Marketing" → "marketing", not "digital". */}
                       Start a {s.title === "Digital Marketing" ? "marketing" : s.title.split(" ")[0].toLowerCase()} project <Arrow />
                     </MagneticButton>
+                    {/* The service's own page — more detail, and an internal
+                        link Google follows to the page written for that search. */}
+                    <a
+                      href={`/services/${SERVICE_SLUGS[s.title]}`}
+                      className="group/more inline-flex items-center gap-1.5 text-sm font-semibold text-cream/80 transition-colors hover:text-ember"
+                    >
+                      Learn more<span className="sr-only"> about {s.title.toLowerCase()}</span>
+                      <span aria-hidden className="transition-transform duration-300 group-hover/more:translate-x-1">→</span>
+                    </a>
                   </div>
                 </div>
                 {/* Phones/tablets: the illustration fills whatever height the

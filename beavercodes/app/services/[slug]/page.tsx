@@ -1,0 +1,259 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import WorkHeader from "@/components/WorkHeader";
+import Footer from "@/components/Footer";
+import MagneticButton, { Arrow } from "@/components/MagneticButton";
+import { SERVICE_PAGES, getServicePage } from "@/utils/services";
+import { PROJECTS } from "@/utils/projects";
+import { SITE, absoluteUrl } from "@/utils/site";
+
+/** One static page per service, each written for its own search intent. */
+export const dynamicParams = false;
+export function generateStaticParams() {
+  return SERVICE_PAGES.map((s) => ({ slug: s.slug }));
+}
+
+type Params = { params: Promise<{ slug: string }> };
+
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  const s = getServicePage((await params).slug);
+  if (!s) return {};
+  return {
+    // Absolute: the page title is already written with the brand at the end.
+    title: { absolute: s.metaTitle },
+    description: s.metaDescription,
+    keywords: s.keywords,
+    alternates: { canonical: `/services/${s.slug}` },
+    openGraph: { type: "website", url: `/services/${s.slug}`, title: s.metaTitle, description: s.metaDescription },
+    twitter: { card: "summary_large_image", title: s.metaTitle, description: s.metaDescription },
+  };
+}
+
+function Eyebrow({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="eyebrow mb-5 flex items-center gap-3">
+      <span className="h-px w-10 bg-ember/60" />
+      {children}
+    </p>
+  );
+}
+
+export default async function ServicePage({ params }: Params) {
+  const s = getServicePage((await params).slug);
+  if (!s) notFound();
+  const related = s.related.map((slug) => PROJECTS.find((p) => p.slug === slug)).filter((p) => !!p);
+  const others = SERVICE_PAGES.filter((x) => x.slug !== s.slug);
+  const url = absoluteUrl(`/services/${s.slug}`);
+
+  // Service + FAQ + breadcrumb structured data.
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Service",
+        "@id": `${url}#service`,
+        name: s.name,
+        serviceType: s.name,
+        description: s.metaDescription,
+        url,
+        provider: { "@id": `${SITE.url}/#organization` },
+        areaServed: [{ "@type": "Country", name: "Sri Lanka" }, "Worldwide"],
+        hasOfferCatalog: {
+          "@type": "OfferCatalog",
+          name: s.name,
+          itemListElement: s.offers.map((o) => ({
+            "@type": "Offer",
+            itemOffered: { "@type": "Service", name: o.title, description: o.text },
+          })),
+        },
+      },
+      {
+        "@type": "FAQPage",
+        "@id": `${url}#faq`,
+        mainEntity: s.faq.map(({ q, a }) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })),
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: absoluteUrl("/") },
+          { "@type": "ListItem", position: 2, name: "Services", item: absoluteUrl("/#services") },
+          { "@type": "ListItem", position: 3, name: s.name, item: url },
+        ],
+      },
+    ],
+  };
+
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
+      <WorkHeader backHref="/?section=services" backLabel="All services" />
+
+      <main className="bg-ink pt-20">
+        {/* ---------- Hero ---------- */}
+        <section className="container-x pb-14 pt-12 md:pb-20 md:pt-16">
+          <nav aria-label="Breadcrumb" className="mb-10 font-mono text-xs uppercase tracking-[0.16em] text-mute">
+            <ol className="flex flex-wrap items-center gap-2">
+              <li><a href="/" className="hover:text-cream">Home</a></li>
+              <li aria-hidden>/</li>
+              <li><a href="/?section=services" className="hover:text-cream">Services</a></li>
+              <li aria-hidden>/</li>
+              <li aria-current="page" className="text-cream">{s.name}</li>
+            </ol>
+          </nav>
+          <Eyebrow>{s.name}</Eyebrow>
+          <h1 className="max-w-5xl text-[clamp(2.4rem,5.6vw,5.2rem)] font-extrabold leading-[1] tracking-[-0.04em]">{s.h1}</h1>
+          <p className="mt-8 max-w-3xl text-lg leading-relaxed text-mute md:text-xl">{s.intro}</p>
+          <div className="mt-10 flex flex-wrap items-center gap-6">
+            <MagneticButton href="/?section=contact">
+              Get a free estimate <Arrow />
+            </MagneticButton>
+            <a href={SITE.whatsapp} target="_blank" rel="noopener noreferrer" className="text-cream/80 underline-offset-4 hover:text-ember hover:underline">
+              WhatsApp {SITE.phone}
+            </a>
+          </div>
+        </section>
+
+        {/* ---------- What we build ---------- */}
+        <section className="bg-coal py-[clamp(3.5rem,7vw,6rem)]">
+          <div className="container-x">
+            <Eyebrow>What we build</Eyebrow>
+            <h2 className="max-w-3xl text-[clamp(2rem,4vw,3.4rem)] font-extrabold leading-[1.02] tracking-[-0.03em]">
+              {s.name} services
+            </h2>
+            <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {s.offers.map((o, i) => (
+                <li key={o.title} className="rounded-[20px] border border-cream/10 bg-ink/60 p-6 md:p-7">
+                  <span className="font-mono text-xs text-ember">{String(i + 1).padStart(2, "0")}</span>
+                  <h3 className="mt-3 text-xl font-bold tracking-tight">{o.title}</h3>
+                  <p className="mt-2 leading-relaxed text-mute">{o.text}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        {/* ---------- Why us + process ---------- */}
+        <section className="container-x grid gap-14 py-[clamp(3.5rem,7vw,6rem)] lg:grid-cols-2 lg:gap-20">
+          <div>
+            <Eyebrow>Why BeaverCodes</Eyebrow>
+            <h2 className="text-[clamp(2rem,4vw,3.4rem)] font-extrabold leading-[1.02] tracking-[-0.03em]">Why work with us</h2>
+            <ul className="mt-10 space-y-6">
+              {s.reasons.map((r) => (
+                <li key={r.title} className="flex gap-4">
+                  <span className="mt-1.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-ember/15 text-xs text-ember">✓</span>
+                  <div>
+                    <h3 className="text-lg font-bold">{r.title}</h3>
+                    <p className="mt-1 leading-relaxed text-mute">{r.text}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <Eyebrow>How it works</Eyebrow>
+            <h2 className="text-[clamp(2rem,4vw,3.4rem)] font-extrabold leading-[1.02] tracking-[-0.03em]">Our process</h2>
+            <ol className="mt-10">
+              {s.process.map((p, i) => (
+                <li key={p.step} className="grid grid-cols-[3rem_1fr] gap-4 border-t border-cream/10 py-5 last:border-b">
+                  <span className="font-mono text-sm text-ember">0{i + 1}</span>
+                  <div>
+                    <h3 className="text-lg font-bold">{p.step}</h3>
+                    <p className="mt-1 leading-relaxed text-mute">{p.text}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
+        {/* ---------- Technology ---------- */}
+        <section className="border-t border-cream/10 py-[clamp(3rem,6vw,5rem)]">
+          <div className="container-x">
+            <Eyebrow>Technology</Eyebrow>
+            <h2 className="text-[clamp(1.8rem,3.4vw,2.8rem)] font-extrabold tracking-[-0.03em]">Tools we use</h2>
+            <ul className="mt-8 flex flex-wrap gap-2">
+              {s.stack.map((t) => (
+                <li key={t} className="rounded-full border border-cream/15 bg-cream/[0.03] px-3.5 py-1.5 text-sm text-cream/90">{t}</li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        {/* ---------- Related work ---------- */}
+        {related.length > 0 && (
+          <section className="bg-coal py-[clamp(3.5rem,7vw,6rem)]">
+            <div className="container-x">
+              <Eyebrow>Related work</Eyebrow>
+              <h2 className="text-[clamp(2rem,4vw,3.4rem)] font-extrabold leading-[1.02] tracking-[-0.03em]">Examples of our work</h2>
+              <ul className="mt-10 grid gap-4 md:grid-cols-3">
+                {related.map((p) => (
+                  <li key={p.slug}>
+                    <a href={`/work/${p.slug}`} className="group block h-full rounded-[20px] border border-cream/10 bg-ink/60 p-6 transition-colors hover:border-ember/50">
+                      <span className="eyebrow">{p.category}</span>
+                      <span className="mt-2 block text-2xl font-extrabold tracking-tight transition-colors group-hover:text-ember">{p.title}</span>
+                      <span className="mt-2 block text-mute">{p.summary}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+        )}
+
+        {/* ---------- FAQ ---------- */}
+        <section className="container-x grid gap-12 py-[clamp(3.5rem,7vw,6rem)] lg:grid-cols-12 lg:gap-16">
+          <div className="lg:col-span-5">
+            <Eyebrow>FAQ</Eyebrow>
+            <h2 className="text-[clamp(2rem,4vw,3.4rem)] font-extrabold leading-[1.02] tracking-[-0.03em]">{s.name} questions</h2>
+          </div>
+          <div className="border-t border-cream/10 lg:col-span-7">
+            {s.faq.map(({ q, a }) => (
+              <details key={q} className="group border-b border-cream/10">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-5 text-lg font-semibold transition-colors hover:text-ember [&::-webkit-details-marker]:hidden">
+                  <h3 className="font-semibold">{q}</h3>
+                  <span aria-hidden className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-cream/15 transition-[transform,border-color] duration-300 group-open:rotate-45 group-open:border-ember">
+                    <span className="absolute h-px w-3 bg-current" />
+                    <span className="absolute h-3 w-px bg-current" />
+                  </span>
+                </summary>
+                <p className="max-w-2xl pb-6 pr-12 leading-relaxed text-mute">{a}</p>
+              </details>
+            ))}
+          </div>
+        </section>
+
+        {/* ---------- CTA + other services ---------- */}
+        <section className="container-x pb-16">
+          <div className="pop-card pop-card-fill relative overflow-hidden rounded-[32px] px-6 py-14 text-center md:px-12 md:py-20">
+            <h2 className="mx-auto max-w-3xl text-[clamp(2rem,4.6vw,4rem)] font-extrabold leading-[1.02] tracking-[-0.035em]">
+              Ready to start your <span className="text-ember">{s.name.toLowerCase()}</span> project?
+            </h2>
+            <p className="mx-auto mt-5 max-w-xl text-lg text-cream/75">
+              Tell us about your business and goals. We&apos;ll reply with ideas, a plan and an honest estimate.
+            </p>
+            <div className="mt-9 flex flex-wrap items-center justify-center gap-6">
+              <MagneticButton href="/?section=contact">
+                Start a project <Arrow />
+              </MagneticButton>
+              <a href={`mailto:${SITE.email}`} className="text-cream/80 underline-offset-4 hover:text-ember hover:underline">{SITE.email}</a>
+            </div>
+          </div>
+          <nav aria-label="Other services" className="mt-12">
+            <p className="eyebrow mb-4">Other services</p>
+            <ul className="flex flex-wrap gap-3">
+              {others.map((o) => (
+                <li key={o.slug}>
+                  <a href={`/services/${o.slug}`} className="inline-flex rounded-full border border-cream/15 px-4 py-2 text-sm text-cream/85 transition-colors hover:border-ember hover:text-ember">
+                    {o.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </section>
+      </main>
+
+      <Footer base="/" />
+    </>
+  );
+}

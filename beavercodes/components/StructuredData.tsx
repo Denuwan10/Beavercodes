@@ -1,4 +1,5 @@
 import { SAME_AS, SITE, absoluteUrl } from "@/utils/site";
+import { SERVICE_PAGES } from "@/utils/services";
 import { FAQ } from "@/utils/faq";
 
 /**
@@ -19,11 +20,14 @@ export default function StructuredData() {
       name: SITE.name,
       url: absoluteUrl("/"),
       logo: { "@type": "ImageObject", url: absoluteUrl("/brand/beaver-mark.png") },
-      image: absoluteUrl("/opengraph-image.png"),
+      image: absoluteUrl("/opengraph-image.jpg"),
       email: SITE.email,
       telephone: SITE.phone.replace(/\s/g, ""),
       slogan: SITE.tagline,
       description: SITE.summary,
+      // Local SEO: where the business is and who it serves.
+      address: { "@type": "PostalAddress", addressCountry: SITE.countryCode },
+      areaServed: [{ "@type": "Country", name: SITE.country }, "Worldwide"],
       contactPoint: {
         "@type": "ContactPoint",
         contactType: "sales",
@@ -36,13 +40,15 @@ export default function StructuredData() {
       hasOfferCatalog: {
         "@type": "OfferCatalog",
         name: "Services",
-        itemListElement: SITE.services.map((s) => ({
+        itemListElement: SERVICE_PAGES.map((s) => ({
           "@type": "Offer",
           itemOffered: {
             "@type": "Service",
+            "@id": `${absoluteUrl(`/services/${s.slug}`)}#service`,
             name: s.name,
-            description: s.description,
+            description: s.metaDescription,
             serviceType: s.name,
+            url: absoluteUrl(`/services/${s.slug}`),
             provider: { "@id": org },
           },
         })),

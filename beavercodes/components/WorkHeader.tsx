@@ -6,8 +6,17 @@ import MagneticButton, { Arrow } from "./MagneticButton";
  * Plain links (full page loads) — the home page rebuilds its 3D intro and
  * scroll pinning from scratch, then jumps to the #section in the URL.
  */
-/** @param backHref where "All work" returns to — the project's own card. */
-export default function WorkHeader({ backHref = "/?section=portfolio" }: { backHref?: string }) {
+/**
+ * @param backHref  where the back link returns to (e.g. the project's own card)
+ * @param backLabel its text: "All work" on project pages, "All services" on service pages
+ */
+export default function WorkHeader({
+  backHref = "/?section=portfolio",
+  backLabel = "All work",
+}: {
+  backHref?: string;
+  backLabel?: string;
+}) {
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-cream/[0.06] bg-ink/75 backdrop-blur-xl">
       <nav className="container-x flex h-20 items-center justify-between gap-4" aria-label="Primary">
@@ -22,7 +31,7 @@ export default function WorkHeader({ backHref = "/?section=portfolio" }: { backH
             <span aria-hidden className="transition-transform duration-300 group-hover:-translate-x-1">
               ←
             </span>
-            All work
+            {backLabel}
           </a>
           <div className="hidden sm:block">
             <MagneticButton href="/?section=contact" className="[&_a]:py-3">

@@ -9,7 +9,8 @@ import "./globals.css";
 const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope", display: "swap" });
 const jetbrains = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains", display: "swap" });
 
-const TITLE = "BeaverCodes — Web, Software & Mobile App Development Agency";
+// ~60 characters, main keyword early — this is the blue link in Google.
+const TITLE = "BeaverCodes | Web & App Development Company in Sri Lanka";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
     description: SITE.description,
   },
   // Icons and the share image come from app/icon.png, app/apple-icon.png and
-  // app/opengraph-image.png (built from the mascot logo in public/brand/).
+  // app/opengraph-image.jpg (built from the mascot logo in public/brand/).
   twitter: { card: "summary_large_image", title: TITLE, description: SITE.description },
   robots: {
     index: true,
