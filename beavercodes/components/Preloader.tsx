@@ -114,36 +114,24 @@ export default function Preloader() {
           <div className="absolute inset-0 flex items-center justify-center px-[var(--gutter)]">
             <motion.div className="flex w-[min(40rem,100%)] flex-col" exit={{ opacity: 0, y: -16 }} transition={{ duration: 0.6, ease: EASE }}>
               <p className="text-center text-[clamp(2.75rem,8vw,6.5rem)] font-semibold leading-[0.95] tracking-[-0.045em]">
+                {/* CSS animations (globals.css), not framer-motion: they run
+                    on the compositor, so the words don't stutter while the
+                    3D scene loads in the background. */}
                 {["Ready", "To"].map((w, i) => (
                   <span key={w} className="inline-block overflow-hidden pb-[0.08em] align-bottom">
-                    <motion.span
-                      className="inline-block"
-                      initial={{ y: "110%" }}
-                      animate={{ y: 0 }}
-                      transition={{ duration: 1, delay: 0.1 + i * 0.08, ease: EASE }}
-                    >
+                    <span className="preload-word inline-block" style={{ animationDelay: `${0.1 + i * 0.08}s` }}>
                       {w}&nbsp;
-                    </motion.span>
+                    </span>
                   </span>
                 ))}
                 <span className="inline-block overflow-hidden pb-[0.08em] align-bottom">
-                  <motion.em
-                    className="inline-block not-italic text-ember"
-                    initial={{ y: "110%" }}
-                    animate={{ y: 0 }}
-                    transition={{ duration: 1, delay: 0.26, ease: EASE }}
-                  >
+                  <em className="preload-word inline-block not-italic text-ember" style={{ animationDelay: "0.26s" }}>
                     Build
-                  </motion.em>
+                  </em>
                 </span>
               </p>
 
-              <motion.div
-                className="mt-[clamp(2rem,6vh,3.5rem)]"
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.9, delay: 0.45, ease: EASE }}
-              >
+              <div className="preload-rise mt-[clamp(2rem,6vh,3.5rem)]">
                 <div className="mb-3 flex h-4 items-baseline">
                   <AnimatePresence mode="wait" initial={false}>
                     <motion.span
@@ -171,7 +159,7 @@ export default function Preloader() {
                   {/* Light sweeping along the bar */}
                   <span className="absolute inset-y-0 left-0 w-1/5 bg-gradient-to-r from-transparent via-white/60 to-transparent mix-blend-overlay will-change-transform [animation:preload-sweep_1.6s_ease-in-out_infinite]" />
                 </div>
-              </motion.div>
+              </div>
             </motion.div>
           </div>
         </motion.div>
