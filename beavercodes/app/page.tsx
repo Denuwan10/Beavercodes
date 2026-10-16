@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import Hero3D from "@/components/Hero3D";
 import Services from "@/components/Services";
 import Portfolio from "@/components/Portfolio";
+import Countries from "@/components/Countries";
 import Process from "@/components/Process";
 import About from "@/components/About";
 import Faq from "@/components/Faq";
@@ -18,6 +19,7 @@ export default function Home() {
         <Hero3D />
         <Services />
         <Portfolio />
+        <Countries />
         <Process />
         <About />
         <Contact />

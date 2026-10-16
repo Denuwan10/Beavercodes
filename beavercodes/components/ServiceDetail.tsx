@@ -1,8 +1,8 @@
 import Link from "next/link";
 import MagneticButton, { Arrow } from "./MagneticButton";
-import { SERVICE_PAGES, type ServicePage } from "@/utils/services";
+import { SERVICE_PAGES, type InlineLink, type ServicePage } from "@/utils/services";
 import { PROJECTS } from "@/utils/projects";
-import { SITE } from "@/utils/site";
+import { SITE, homeSection } from "@/utils/site";
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
@@ -18,16 +18,46 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
  * opened directly or from another page) and the overlay that opens over the
  * home page from its footer or Services section (app/@modal).
  *
- * mode "page":    links go to other pages ("/?section=contact" etc.).
+ * mode "page":    links go to other pages ("/#contact" etc.).
  * mode "overlay": "#contact" closes the overlay and scrolls the home page
  *                 underneath; other services swap in place; related work opens
  *                 the project overlay, so Back steps return here, then home.
  */
 export default function ServiceDetail({ s, mode }: { s: ServicePage; mode: "page" | "overlay" }) {
   const overlay = mode === "overlay";
+  // Section headings: per-service where written for search intent, else generic.
+  const h = {
+    offers: `${s.name} services`,
+    reasons: "Why work with us",
+    process: "Our process",
+    stack: "Tools we use",
+    related: "Examples of our work",
+    faq: `${s.name} questions`,
+    ...s.headings,
+  };
+
+  // A contextual link inside the copy. Another service opened from the
+  // overlay swaps in place (like "Other services"); otherwise a normal link.
+  const inline = (l?: InlineLink) => {
+    if (!l) return null;
+    const className = "text-cream underline decoration-ember/60 underline-offset-4 transition-colors hover:text-ember";
+    const swap = overlay && l.href.startsWith("/services/");
+    return (
+      <>
+        {" "}
+        {l.before}
+        {swap ? (
+          <Link href={l.href} replace scroll={false} className={className}>{l.text}</Link>
+        ) : (
+          <a href={l.href} className={className}>{l.text}</a>
+        )}
+        {l.after}
+      </>
+    );
+  };
   const related = s.related.map((slug) => PROJECTS.find((p) => p.slug === slug)).filter((p) => !!p);
   const others = SERVICE_PAGES.filter((x) => x.slug !== s.slug);
-  const contactHref = overlay ? "#contact" : "/?section=contact";
+  const contactHref = overlay ? "#contact" : homeSection("contact");
   const TitleTag = overlay ? "h2" : "h1";
 
   return (
@@ -39,24 +69,53 @@ export default function ServiceDetail({ s, mode }: { s: ServicePage; mode: "page
             <ol className="flex flex-wrap items-center gap-2">
               <li><a href="/" className="hover:text-cream">Home</a></li>
               <li aria-hidden>/</li>
-              <li><a href="/?section=services" className="hover:text-cream">Services</a></li>
+              <li><a href={homeSection("services")} className="hover:text-cream">Services</a></li>
               <li aria-hidden>/</li>
               <li aria-current="page" className="text-cream">{s.name}</li>
             </ol>
           </nav>
         )}
-        <Eyebrow>{s.name}</Eyebrow>
-        <TitleTag
-          id={overlay ? "service-title" : undefined}
-          className="max-w-5xl text-[clamp(2.4rem,5.6vw,5.2rem)] font-extrabold leading-[1] tracking-[-0.04em]"
-        >
-          {s.h1}
-        </TitleTag>
-        <p className="mt-8 max-w-3xl text-lg leading-relaxed text-mute md:text-xl">{s.intro}</p>
-        <div className="mt-10 flex flex-wrap items-center gap-6">
-          <a href={SITE.whatsapp} target="_blank" rel="noopener noreferrer" className="text-cream/80 underline-offset-4 hover:text-ember hover:underline">
-            WhatsApp {SITE.phone}
-          </a>
+        {/* Text left, illustration right (stacked on phones/tablets). */}
+        <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-14">
+          <div className="lg:col-span-7">
+            <Eyebrow>{s.name}</Eyebrow>
+            <TitleTag
+              id={overlay ? "service-title" : undefined}
+              className="text-[clamp(2.4rem,4.6vw,4.6rem)] font-extrabold leading-[1] tracking-[-0.04em]"
+            >
+              {s.h1}
+            </TitleTag>
+            <p className="mt-8 max-w-2xl text-lg leading-relaxed text-mute md:text-xl">{s.intro}</p>
+            <div className="mt-10 flex flex-wrap items-center gap-6">
+              <a href={SITE.whatsapp} target="_blank" rel="noopener noreferrer" className="text-cream/80 underline-offset-4 hover:text-ember hover:underline">
+                WhatsApp {SITE.phone}
+              </a>
+            </div>
+          </div>
+          <div className="relative lg:col-span-5">
+            {/* Warm glow behind the frame, like the home page cards. */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 rounded-full opacity-70 blur-3xl lg:-inset-8"
+              style={{ background: "radial-gradient(closest-side, rgba(255,122,26,0.22), transparent)" }}
+            />
+            <div className="pop-card relative overflow-hidden rounded-[28px] bg-coal">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`/services/${s.slug}-1200.webp`}
+                srcSet={`/services/${s.slug}-720.webp 720w, /services/${s.slug}-1200.webp 1200w`}
+                sizes="(min-width: 1024px) 40vw, 92vw"
+                width={1200}
+                height={900}
+                alt={s.imageAlt}
+                // Top of the page on desktop: load it straight away.
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
+                className="block aspect-[4/3] h-auto w-full object-cover"
+              />
+            </div>
+          </div>
         </div>
       </section>
 
@@ -65,14 +124,15 @@ export default function ServiceDetail({ s, mode }: { s: ServicePage; mode: "page
         <div className="container-x">
           <Eyebrow>What we build</Eyebrow>
           <h2 className="max-w-3xl text-[clamp(2rem,4vw,3.4rem)] font-extrabold leading-[1.02] tracking-[-0.03em]">
-            {s.name} services
+            {h.offers}
           </h2>
+          {s.offersIntro && <p className="mt-6 max-w-2xl text-lg leading-relaxed text-mute">{s.offersIntro}</p>}
           <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {s.offers.map((o, i) => (
               <li key={o.title} className="rounded-[20px] border border-cream/10 bg-ink/60 p-6 md:p-7">
                 <span className="font-mono text-xs text-ember">{String(i + 1).padStart(2, "0")}</span>
                 <h3 className="mt-3 text-xl font-bold tracking-tight">{o.title}</h3>
-                <p className="mt-2 leading-relaxed text-mute">{o.text}</p>
+                <p className="mt-2 leading-relaxed text-mute">{o.text}{inline(o.link)}</p>
               </li>
             ))}
           </ul>
@@ -83,14 +143,14 @@ export default function ServiceDetail({ s, mode }: { s: ServicePage; mode: "page
       <section className="container-x grid gap-14 py-[clamp(3.5rem,7vw,6rem)] lg:grid-cols-2 lg:gap-20">
         <div>
           <Eyebrow>Why BeaverCodes</Eyebrow>
-          <h2 className="text-[clamp(2rem,4vw,3.4rem)] font-extrabold leading-[1.02] tracking-[-0.03em]">Why work with us</h2>
+          <h2 className="text-[clamp(2rem,4vw,3.4rem)] font-extrabold leading-[1.02] tracking-[-0.03em]">{h.reasons}</h2>
           <ul className="mt-10 space-y-6">
             {s.reasons.map((r) => (
               <li key={r.title} className="flex gap-4">
                 <span className="mt-1.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-ember/15 text-xs text-ember">✓</span>
                 <div>
                   <h3 className="text-lg font-bold">{r.title}</h3>
-                  <p className="mt-1 leading-relaxed text-mute">{r.text}</p>
+                  <p className="mt-1 leading-relaxed text-mute">{r.text}{inline(r.link)}</p>
                 </div>
               </li>
             ))}
@@ -98,7 +158,7 @@ export default function ServiceDetail({ s, mode }: { s: ServicePage; mode: "page
         </div>
         <div>
           <Eyebrow>How it works</Eyebrow>
-          <h2 className="text-[clamp(2rem,4vw,3.4rem)] font-extrabold leading-[1.02] tracking-[-0.03em]">Our process</h2>
+          <h2 className="text-[clamp(2rem,4vw,3.4rem)] font-extrabold leading-[1.02] tracking-[-0.03em]">{h.process}</h2>
           <ol className="mt-10">
             {s.process.map((p, i) => (
               <li key={p.step} className="grid grid-cols-[3rem_1fr] gap-4 border-t border-cream/10 py-5 last:border-b">
@@ -117,7 +177,7 @@ export default function ServiceDetail({ s, mode }: { s: ServicePage; mode: "page
       <section className="border-t border-cream/10 py-[clamp(3rem,6vw,5rem)]">
         <div className="container-x">
           <Eyebrow>Technology</Eyebrow>
-          <h2 className="text-[clamp(1.8rem,3.4vw,2.8rem)] font-extrabold tracking-[-0.03em]">Tools we use</h2>
+          <h2 className="text-[clamp(1.8rem,3.4vw,2.8rem)] font-extrabold tracking-[-0.03em]">{h.stack}</h2>
           <ul className="mt-8 flex flex-wrap gap-2">
             {s.stack.map((t) => (
               <li key={t} className="rounded-full border border-cream/15 bg-cream/[0.03] px-3.5 py-1.5 text-sm text-cream/90">{t}</li>
@@ -131,7 +191,7 @@ export default function ServiceDetail({ s, mode }: { s: ServicePage; mode: "page
         <section className="bg-coal py-[clamp(3.5rem,7vw,6rem)]">
           <div className="container-x">
             <Eyebrow>Related work</Eyebrow>
-            <h2 className="text-[clamp(2rem,4vw,3.4rem)] font-extrabold leading-[1.02] tracking-[-0.03em]">Examples of our work</h2>
+            <h2 className="text-[clamp(2rem,4vw,3.4rem)] font-extrabold leading-[1.02] tracking-[-0.03em]">{h.related}</h2>
             <ul className="mt-10 grid gap-4 md:grid-cols-3">
               {related.map((p) => {
                 const className = "group block h-full rounded-[20px] border border-cream/10 bg-ink/60 p-6 transition-colors hover:border-ember/50";
@@ -166,7 +226,7 @@ export default function ServiceDetail({ s, mode }: { s: ServicePage; mode: "page
       <section className="container-x grid gap-12 py-[clamp(3.5rem,7vw,6rem)] lg:grid-cols-12 lg:gap-16">
         <div className="lg:col-span-5">
           <Eyebrow>FAQ</Eyebrow>
-          <h2 className="text-[clamp(2rem,4vw,3.4rem)] font-extrabold leading-[1.02] tracking-[-0.03em]">{s.name} questions</h2>
+          <h2 className="text-[clamp(2rem,4vw,3.4rem)] font-extrabold leading-[1.02] tracking-[-0.03em]">{h.faq}</h2>
         </div>
         <div className="border-t border-cream/10 lg:col-span-7">
           {s.faq.map(({ q, a }) => (

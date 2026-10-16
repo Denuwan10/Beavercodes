@@ -33,7 +33,7 @@ export type Project = {
   alt: string;
 
   // ---- Project page ----
-  /** Search title; the layout adds " | BeaverCodes". */
+  /** Full search title, brand included (used as an absolute title). */
   metaTitle: string;
   /** Search description, under ~155 characters. */
   metaDescription: string;
@@ -78,9 +78,9 @@ export const PROJECTS: Project[] = [
     image: "edupro",
     shot: { sm: [800, 533], lg: [1536, 1024] },
     alt: "EduPro e-learning dashboard with course cards, progress stats, a calendar and upcoming activities",
-    metaTitle: "EduPro: E-learning Dashboard Web App (Concept)",
+    metaTitle: "E-Learning Web App Case Study | EduPro | BeaverCodes",
     metaDescription:
-      "EduPro is a concept e-learning dashboard: one calm home base for courses, progress and deadlines. See its features, tech stack and process.",
+      "Explore EduPro, an e-learning web app concept by BeaverCodes with student dashboards, course progress, calendars, achievements and responsive web technology.",
     updated: "2026-10-16",
     kind: "Concept project",
     year: "2026",
@@ -140,9 +140,9 @@ export const PROJECTS: Project[] = [
     cutout: true,
     shot: { sm: [480, 513], lg: [808, 863] },
     alt: "FinGrow mobile app on two phones: the home screen with an active loan overview, and the apply-for-a-loan screen",
-    metaTitle: "FinGrow: Fintech Loan Mobile App (Concept)",
+    metaTitle: "Fintech Mobile App Case Study | FinGrow | BeaverCodes",
     metaDescription:
-      "FinGrow is a concept fintech app for small-business loans: apply in three steps, see what you'll pay and manage repayments from your phone.",
+      "Explore FinGrow, a fintech mobile app concept designed for simple business lending, repayments, secure authentication and mobile-first user experiences.",
     updated: "2026-10-16",
     kind: "Concept project",
     year: "2026",
@@ -201,9 +201,9 @@ export const PROJECTS: Project[] = [
     image: "harlow",
     shot: { sm: [800, 450], lg: [1600, 900] },
     alt: "HARLOW fashion store: homepage with a Modern Essentials hero and categories, and an Essential Hoodie product page",
-    metaTitle: "HARLOW: Menswear E-commerce Store (Concept)",
+    metaTitle: "E-Commerce Website Case Study | HARLOW | BeaverCodes",
     metaDescription:
-      "HARLOW is a concept online store for a modern menswear label: a calm, editorial shopping experience with product pages built to turn browsing into buying.",
+      "Explore HARLOW, an e-commerce website concept with editorial design, product discovery, Shopify integration and conversion-focused shopping experiences.",
     updated: "2026-10-16",
     kind: "Concept project",
     year: "2026",
@@ -259,9 +259,9 @@ export const PROJECTS: Project[] = [
     image: "beanory",
     shot: { sm: [800, 600], lg: [1448, 1086] },
     alt: "Beanory coffee shop website with a latte hero, signature drinks menu, testimonials and table booking",
-    metaTitle: "Beanory: Coffee Shop Website (Concept)",
+    metaTitle: "Café Website Case Study | Beanory | BeaverCodes",
     metaDescription:
-      "Beanory is a concept website for a specialty coffee shop that shows the menu, takes orders and fills tables. See its features, tech stack and process.",
+      "Explore Beanory, a café website concept featuring online ordering, table booking, menu browsing, local SEO and mobile-first design.",
     updated: "2026-10-16",
     kind: "Concept project",
     year: "2026",

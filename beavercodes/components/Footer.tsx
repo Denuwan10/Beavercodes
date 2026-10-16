@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Logo from "./Logo";
 import { CHANNELS, SocialIcon } from "./Socials";
-import { SITE } from "@/utils/site";
+import { SITE, homeSection } from "@/utils/site";
 import { SERVICE_PAGES } from "@/utils/services";
 import { useLenis } from "@/hooks/useLenis";
 import CookieSettingsButton from "./CookieSettingsButton";
@@ -52,9 +52,9 @@ export default function Footer({ base = "" }: { base?: string }) {
               {NAV.map((n) => (
                 <li key={n.href}>
                   <a
-                    // Other pages link back as "/?section=<id>" (not "/#id"),
-                    // so the browser doesn't jump before the home intro is ready.
-                    href={base ? `${base}?section=${n.href.slice(1)}` : n.href}
+                    // Other pages link back as "/#<id>"; the home page jumps
+                    // there once its intro has loaded (Navbar).
+                    href={base ? homeSection(n.href.slice(1)) : n.href}
                     className="text-cream/80 transition-colors hover:text-ember"
                   >
                     {n.label}

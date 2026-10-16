@@ -9,14 +9,14 @@ import "./globals.css";
 const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope", display: "swap" });
 const jetbrains = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains", display: "swap" });
 
-// ~60 characters, main keyword early — this is the blue link in Google.
-const TITLE = "BeaverCodes | Web & App Development Company in Sri Lanka";
+// The blue link in Google for the home page.
+const TITLE = "BeaverCodes | Web, Software & Mobile App Development in Sri Lanka";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: { default: TITLE, template: `%s | ${SITE.name}` },
   description: SITE.description,
-  keywords: [...SITE.keywords],
+  // No meta keywords: search engines ignore them.
   applicationName: SITE.name,
   authors: [{ name: SITE.name, url: SITE.url }],
   creator: SITE.name,

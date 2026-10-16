@@ -64,14 +64,15 @@ export default function Navbar() {
     else if (experience.get().loaded) lenis.start();
   }, [open, lenis]);
 
-  // Arriving from another page with "/?section=<id>" (a query, not a #hash,
-  // so the browser doesn't jump before the intro is ready): once the
-  // preloader is done, jump to that section. A jump, not a glide — gliding
-  // would play the whole 3D intro on the way. ("?work=<slug>", a specific
-  // project card, is handled by Portfolio.)
+  // Arriving from another page with "/#<id>" (or the older "/?section=<id>"):
+  // hold at the top while the intro loads (SmoothScroll resets any early
+  // browser jump; the preloader covers it), then jump to that section. A
+  // jump, not a glide — gliding would play the whole 3D intro on the way.
+  // ("#work/<slug>", a specific project card, is handled by Portfolio.)
   useEffect(() => {
     if (!loaded || !lenis) return;
-    const id = new URLSearchParams(window.location.search).get("section");
+    const hash = decodeURIComponent(window.location.hash.slice(1));
+    const id = new URLSearchParams(window.location.search).get("section") ?? (hash && !hash.includes("/") ? hash : null);
     const el = id ? document.getElementById(id) : null;
     if (!el) return;
     const t = window.setTimeout(() => {

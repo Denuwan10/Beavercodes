@@ -4,7 +4,7 @@ import WorkHeader from "@/components/WorkHeader";
 import Footer from "@/components/Footer";
 import ServiceDetail from "@/components/ServiceDetail";
 import { SERVICE_PAGES, getServicePage } from "@/utils/services";
-import { AREA_SERVED, SHARE_IMAGE, SITE, absoluteUrl } from "@/utils/site";
+import { AREA_SERVED, SHARE_IMAGE, SITE, absoluteUrl, homeSection } from "@/utils/site";
 
 /** One static page per service, each written for its own search intent. */
 export const dynamicParams = false;
@@ -21,7 +21,6 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     // Absolute: the page title is already written with the brand at the end.
     title: { absolute: s.metaTitle },
     description: s.metaDescription,
-    keywords: s.keywords,
     alternates: { canonical: `/services/${s.slug}` },
     // A page-level openGraph replaces the layout's, so the share image (the
     // site's 1200×630 brand card) is set here explicitly.
@@ -90,7 +89,7 @@ export default async function ServicePage({ params }: Params) {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
-      <WorkHeader backHref="/?section=services" backLabel="All services" />
+      <WorkHeader backHref={homeSection("services")} backLabel="All services" />
 
       <main className="bg-ink pt-20">
         <ServiceDetail s={s} mode="page" />

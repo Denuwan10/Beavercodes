@@ -3,6 +3,7 @@ import WorkHeader from "@/components/WorkHeader";
 import Footer from "@/components/Footer";
 import MagneticButton, { Arrow } from "@/components/MagneticButton";
 import { SERVICE_PAGES } from "@/utils/services";
+import { homeSection } from "@/utils/site";
 
 /**
  * Branded 404 for unknown URLs (served with HTTP 404 by Next.js; noindex).
@@ -37,7 +38,7 @@ export default function NotFound() {
             <MagneticButton href="/">
               Back to the home page <Arrow />
             </MagneticButton>
-            <a href="/?section=contact" className="text-cream/80 underline-offset-4 hover:text-ember hover:underline">
+            <a href={homeSection("contact")} className="text-cream/80 underline-offset-4 hover:text-ember hover:underline">
               Contact us
             </a>
           </div>
@@ -62,9 +63,9 @@ export default function NotFound() {
               <p className="eyebrow mb-4">Explore</p>
               <ul className="flex flex-wrap gap-3">
                 {[
-                  ["Portfolio", "/?section=portfolio"],
-                  ["About", "/?section=about"],
-                  ["FAQ", "/?section=faq"],
+                  ["Portfolio", homeSection("portfolio")],
+                  ["About", homeSection("about")],
+                  ["FAQ", homeSection("faq")],
                 ].map(([label, href]) => (
                   <li key={href}>
                     <a

@@ -2,7 +2,7 @@ import Link from "next/link";
 import ProjectShot from "./ProjectShot";
 import MagneticButton, { Arrow } from "./MagneticButton";
 import { PROJECTS, type Project } from "@/utils/projects";
-import { SITE } from "@/utils/site";
+import { SITE, homeSection, homeWork } from "@/utils/site";
 import { SERVICE_PAGES } from "@/utils/services";
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
@@ -19,7 +19,7 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
  * opened directly) and the overlay that opens over the home page from a
  * portfolio card.
  *
- * mode "page":    links go to other pages ("/?section=contact" etc.).
+ * mode "page":    links go to other pages ("/#contact" etc.).
  * mode "overlay": "#section" links (the overlay closes, then scrolls the home
  *                 page underneath), and previous/next swap the overlay in place.
  */
@@ -28,7 +28,7 @@ export default function ProjectDetail({ p, mode }: { p: Project; mode: "page" | 
   const index = PROJECTS.indexOf(p);
   const prev = PROJECTS[(index - 1 + PROJECTS.length) % PROJECTS.length];
   const next = PROJECTS[(index + 1) % PROJECTS.length];
-  const contactHref = overlay ? "#contact" : "/?section=contact";
+  const contactHref = overlay ? "#contact" : homeSection("contact");
   const TitleTag = overlay ? "h2" : "h1";
   // Service pages that list this project as an example of their work.
   const services = SERVICE_PAGES.filter((s) => s.related.includes(p.slug));
@@ -55,7 +55,7 @@ export default function ProjectDetail({ p, mode }: { p: Project; mode: "page" | 
               </li>
               <li aria-hidden>/</li>
               <li>
-                <a href={`/?work=${p.slug}`} className="hover:text-cream">Work</a>
+                <a href={homeWork(p.slug)} className="hover:text-cream">Work</a>
               </li>
               <li aria-hidden>/</li>
               <li aria-current="page" className="text-cream">{p.title}</li>

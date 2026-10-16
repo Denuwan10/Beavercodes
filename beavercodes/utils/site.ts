@@ -18,9 +18,9 @@ export const SITE = {
   /** Where the business is based / serves (local SEO). */
   country: "Sri Lanka",
   countryCode: "LK",
-  /** ~150–160 characters: used as the meta description. */
+  /** The home page's meta description (also the WebSite description). */
   description:
-    "Web development company in Sri Lanka building fast websites, custom software and iOS/Android apps, plus SEO and digital marketing that grow businesses.",
+    "BeaverCodes builds fast, SEO-ready business websites, e-commerce stores and web apps for businesses in Sri Lanka and worldwide. Start your project.",
   /** A fuller, plain-language summary for AI assistants and rich results. */
   summary:
     "BeaverCodes is a web, software and mobile app development company based in Sri Lanka, working with businesses in Sri Lanka and worldwide. It designs and builds modern websites, e-commerce stores, custom business software and iOS/Android apps, and runs digital marketing — SEO, social media, paid campaigns and analytics. Every project follows the same four steps: Discover, Design, Develop and Grow.",
@@ -112,7 +112,18 @@ export const SHARE_IMAGE = {
   url: "/opengraph-image.jpg",
   width: 1200,
   height: 630,
-  alt: "BeaverCodes logo: a beaver working on a laptop, with the BeaverCodes wordmark",
+  alt: "BeaverCodes: Your business deserves a stronger digital future. Websites, software, mobile apps and digital marketing, Sri Lanka and worldwide.",
 };
 
-export const absoluteUrl = (path = "/") => `${SITE.url}${path.startsWith("/") ? path : `/${path}`}`;
+/**
+ * Links from other pages back into the home page. Fragments, not queries, so
+ * they never form separate URLs for search engines; the home page reads them
+ * after its intro has loaded and jumps there (Navbar / Portfolio).
+ *   homeSection("faq")   → "/#faq"         (a section)
+ *   homeWork("edupro")   → "/#work/edupro" (a portfolio card; no element has
+ *                                            this id, so the browser can't jump early)
+ */
+export const homeSection = (id: string) => `/#${id}`;
+export const homeWork = (slug: string) => `/#work/${slug}`;
+
+export const absoluteUrl =(path = "/") => `${SITE.url}${path.startsWith("/") ? path : `/${path}`}`;

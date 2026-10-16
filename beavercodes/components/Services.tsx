@@ -214,6 +214,14 @@ const SERVICE_SLUGS: Record<string, string> = {
   "Digital Marketing": "digital-marketing",
 };
 
+/** Descriptive link text to each card's page (instead of "Learn more"). */
+const SERVICE_LINK_TEXT: Record<string, string> = {
+  "Web Development": "Web development services",
+  "Software Development": "Custom software development",
+  "Mobile Apps": "Mobile app development",
+  "Digital Marketing": "Digital marketing and SEO",
+};
+
 const SERVICES: Service[] = [
   {
     title: "Web Development",
@@ -355,7 +363,7 @@ export default function Services() {
                       scroll={false}
                       className="group/more inline-flex items-center gap-1.5 text-sm font-semibold text-cream/80 transition-colors hover:text-ember"
                     >
-                      Learn more<span className="sr-only"> about {s.title.toLowerCase()}</span>
+                      {SERVICE_LINK_TEXT[s.title]}
                       <span aria-hidden className="transition-transform duration-300 group-hover/more:translate-x-1">→</span>
                     </Link>
                   </div>

@@ -75,7 +75,7 @@ export default function ScreenPortalSync({
 }) {
   const camera = useThree((s) => s.camera);
   const size = useThree((s) => s.size);
-  const last = useRef({ visible: false, fade: -1, flash: -1, filter: "" });
+  const last = useRef({ filter: "" });
 
   const corners = useMemo(() => {
     const { hw, hh } = portalHalfSize(size.width / Math.max(1, size.height));
@@ -95,34 +95,33 @@ export default function ScreenPortalSync({
     const W = size.width;
     const H = size.height;
 
+    // Compare against the elements' current inline styles (not a remembered
+    // value): Hero3D also writes these when the loop pauses past the intro,
+    // and a stale copy left the canvas hidden after scrolling back up.
+    const styleNum = (v: string, fallback: number) => (v === "" ? fallback : parseFloat(v));
+
     // Canvas fades out once the site owns the viewport.
     const canvasFade = 1 - range(p, STORY.revealAt, STORY.revealAt + 0.04);
-    if (wrap && Math.abs(canvasFade - last.current.fade) > 0.001) {
+    if (wrap && Math.abs(canvasFade - styleNum(wrap.style.opacity, 1)) > 0.001) {
       wrap.style.opacity = String(canvasFade);
       wrap.style.visibility = canvasFade <= 0.001 ? "hidden" : "visible";
-      last.current.fade = canvasFade;
     }
 
     // Light transition: a warm bloom that peaks as the glass fills the frame,
     // then clears to reveal the page.
     const flashO = smoothstep(range(p, 0.7, 0.785)) * (1 - smoothstep(range(p, 0.8, 0.88))) * 0.85;
-    if (flash?.current && Math.abs(flashO - last.current.flash) > 0.002) {
+    if (flash?.current && Math.abs(flashO - styleNum(flash.current.style.opacity, 0)) > 0.002) {
       flash.current.style.opacity = flashO.toFixed(3);
-      last.current.flash = flashO;
     }
 
     if (p < STORY.portalStart - 0.02) {
-      if (last.current.visible) {
+      if (el.style.visibility !== "hidden") {
         el.style.visibility = "hidden";
         el.style.pointerEvents = "none";
-        last.current.visible = false;
       }
       return;
     }
-    if (!last.current.visible) {
-      el.style.visibility = "visible";
-      last.current.visible = true;
-    }
+    if (el.style.visibility !== "visible") el.style.visibility = "visible";
 
     // Project portal corners to screen pixels.
     const pts = corners.map((c) => {

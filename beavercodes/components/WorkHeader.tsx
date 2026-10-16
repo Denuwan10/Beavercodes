@@ -1,5 +1,6 @@
 import Logo from "./Logo";
 import MagneticButton, { Arrow } from "./MagneticButton";
+import { homeSection } from "@/utils/site";
 
 /**
  * Header for project pages: logo home, back to all work, start a project.
@@ -11,7 +12,7 @@ import MagneticButton, { Arrow } from "./MagneticButton";
  * @param backLabel its text: "All work" on project pages, "All services" on service pages
  */
 export default function WorkHeader({
-  backHref = "/?section=portfolio",
+  backHref = homeSection("portfolio"),
   backLabel = "All work",
 }: {
   backHref?: string;
@@ -34,7 +35,7 @@ export default function WorkHeader({
             {backLabel}
           </a>
           <div className="hidden sm:block">
-            <MagneticButton href="/?section=contact" className="[&_a]:py-3">
+            <MagneticButton href={homeSection("contact")} className="[&_a]:py-3">
               Start a project <Arrow />
             </MagneticButton>
           </div>

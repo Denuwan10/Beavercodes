@@ -4,7 +4,7 @@ import WorkHeader from "@/components/WorkHeader";
 import Footer from "@/components/Footer";
 import ProjectDetail from "@/components/ProjectDetail";
 import { PROJECTS, getProject } from "@/utils/projects";
-import { SITE, absoluteUrl } from "@/utils/site";
+import { SITE, absoluteUrl, homeWork } from "@/utils/site";
 
 /**
  * Full project page — what you get opening /work/<slug> directly (a shared
@@ -21,9 +21,9 @@ type Params = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const p = getProject((await params).slug);
   if (!p) return {};
-  // Hand-written per project (utils/projects.ts); the layout template adds the brand.
-  const title = p.metaTitle;
-  const shareTitle = `${p.metaTitle} | ${SITE.name}`;
+  // Hand-written per project (utils/projects.ts), brand already included.
+  const title = { absolute: p.metaTitle };
+  const shareTitle = p.metaTitle;
   const description = p.metaDescription;
   // 1200×630 JPEG: the share-preview size/format WhatsApp, Facebook, LinkedIn
   // and X all display reliably (WebP previews often don't show in WhatsApp).
@@ -84,7 +84,7 @@ export default async function ProjectPage({ params }: Params) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
-      <WorkHeader backHref={`/?work=${p.slug}`} />
+      <WorkHeader backHref={homeWork(p.slug)} />
       <main className="bg-ink pt-20">
         <ProjectDetail p={p} mode="page" />
       </main>

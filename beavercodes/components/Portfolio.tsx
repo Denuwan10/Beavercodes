@@ -107,14 +107,16 @@ export default function Portfolio() {
   const lenis = useLenis();
   const loaded = useExperience((s) => s.loaded);
 
-  // Coming back from a project page ("/?work=<slug>" — a query, not a #hash,
-  // so the browser doesn't jump before the intro is ready): once the
-  // preloader is done, jump straight to that project's card. On desktop the
-  // cards scroll sideways inside a pinned section, so the target is the scroll
-  // position where that card sits in the middle of the screen, not its top.
+  // Coming back from a project page ("/#work/<slug>", or the older
+  // "/?work=<slug>"; no element has that id, so the browser can't jump before
+  // the intro is ready): once the preloader is done, jump straight to that
+  // project's card. On desktop the cards scroll sideways inside a pinned
+  // section, so the target is the scroll position where that card sits in the
+  // middle of the screen, not its top.
   useEffect(() => {
     if (!loaded) return;
-    const slug = new URLSearchParams(window.location.search).get("work");
+    const fromHash = /^#work\/([\w-]+)$/.exec(window.location.hash)?.[1];
+    const slug = new URLSearchParams(window.location.search).get("work") ?? fromHash;
     const card = slug && document.getElementById(`work-${slug}`);
     if (!card) return;
     const t = window.setTimeout(() => {
