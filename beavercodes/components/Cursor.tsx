@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { experience } from "@/utils/store";
 
 /**
  * Two-part cursor: a precise dot and a lagging ring. Elements opt in to
@@ -17,12 +18,36 @@ export default function Cursor() {
     if (!window.matchMedia("(pointer: fine)").matches) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    document.documentElement.classList.add("has-custom-cursor");
     const target = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
     const pos = { ...target };
     let mode = "";
     let visible = false;
+    let moved = false;
     let raf = 0;
+    let enabled = false;
+
+    // While the home page's preloader is up, the main thread is busy loading
+    // the 3D scene, so a JS-driven cursor stutters. Keep the native cursor
+    // (drawn by the OS, never lags) until the preloader has finished.
+    const enable = () => {
+      if (enabled) return;
+      enabled = true;
+      document.documentElement.classList.add("has-custom-cursor");
+      pos.x = target.x;
+      pos.y = target.y;
+      if (moved) {
+        visible = true;
+        dot.current?.style.setProperty("opacity", "1");
+        ring.current?.style.setProperty("opacity", "1");
+      }
+      raf = requestAnimationFrame(loop);
+    };
+    const waitForIntro = window.location.pathname === "/" && !experience.get().loaded;
+    const unsubscribe = waitForIntro
+      ? experience.subscribe(() => {
+          if (experience.get().loaded) enable();
+        })
+      : () => {};
 
     const setMode = (next: string, text = "") => {
       if (next === mode) return;
@@ -34,6 +59,8 @@ export default function Cursor() {
     const onMove = (e: PointerEvent) => {
       target.x = e.clientX;
       target.y = e.clientY;
+      moved = true;
+      if (!enabled) return;
       if (!visible) {
         visible = true;
         pos.x = target.x;
@@ -63,8 +90,9 @@ export default function Cursor() {
 
     window.addEventListener("pointermove", onMove, { passive: true });
     document.addEventListener("pointerleave", onLeave);
-    raf = requestAnimationFrame(loop);
+    if (!waitForIntro) enable();
     return () => {
+      unsubscribe();
       document.documentElement.classList.remove("has-custom-cursor");
       window.removeEventListener("pointermove", onMove);
       document.removeEventListener("pointerleave", onLeave);

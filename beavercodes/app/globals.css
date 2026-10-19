@@ -50,12 +50,29 @@ body {
   color: var(--color-ink);
 }
 
-/* Hide the native cursor only when our custom cursor is active (fine pointers). */
-@media (pointer: fine) {
-  html.has-custom-cursor,
-  html.has-custom-cursor * {
-    cursor: none !important;
-  }
+/* Brand pointers (public/cursors): an ember arrow, and a matching hand on
+   anything clickable. Real CSS cursors are drawn by the operating system, so
+   they never lag, even while the 3D scene is loading. Text fields keep the
+   normal text cursor; every value falls back to the system cursor. */
+html {
+  cursor: url("/cursors/arrow.svg") 3 2, auto;
+}
+a,
+button,
+summary,
+select,
+label,
+[role="button"],
+[data-cursor="hover"],
+[data-cursor="view"] {
+  cursor: url("/cursors/hand.svg") 9 2, pointer;
+}
+input:not([type="radio"]):not([type="checkbox"]),
+textarea {
+  cursor: text;
+}
+:disabled {
+  cursor: not-allowed;
 }
 
 /* Film grain overlay – adds tactile, analog quality to flat darks. */

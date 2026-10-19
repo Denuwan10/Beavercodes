@@ -20,6 +20,8 @@ import { DESK } from "@/utils/sceneLayout";
 
 type Props = {
   tier: Tier;
+  /** Integrated / software GPU: cap the canvas at 1× (≈35% fewer pixels at 125% scaling). */
+  weakGpu?: boolean;
   active: boolean;
   isTouch: boolean;
   portal: React.RefObject<HTMLDivElement | null>;
@@ -53,10 +55,14 @@ function ShadowBudget() {
   return null;
 }
 
-export default function BeaverScene({ tier, active, isTouch, portal, canvasWrap, flash }: Props) {
-  const q = QUALITY[tier];
+export default function BeaverScene({ tier, weakGpu, active, isTouch, portal, canvasWrap, flash }: Props) {
+  const base = QUALITY[tier];
+  const q = weakGpu ? { ...base, dpr: [1, 1] as [number, number] } : base;
   const [dpr, setDpr] = useState(q.dpr[1]);
-  const [post, setPost] = useState(q.post);
+  // Integrated GPUs skip the full post stack but keep a light one (vignette,
+  // tone mapping, dive warp) so the drag-through-the-screen transition stays.
+  const [post, setPost] = useState(q.post || !!weakGpu);
+  const litePost = !q.post;
 
   return (
     <Canvas
@@ -81,7 +87,10 @@ export default function BeaverScene({ tier, active, isTouch, portal, canvasWrap,
       <PerformanceMonitor
         onDecline={() => {
           setDpr((d) => Math.max(q.dpr[0], d - 0.25));
-          setPost(false);
+          // Dropping the post stack makes the GPU recompile every material —
+          // a visible freeze. Only do it while the preloader still covers the
+          // scene; once the intro is playing, lower the resolution instead.
+          if (!experience.get().loaded) setPost(false);
         }}
         onIncline={() => setDpr((d) => Math.min(q.dpr[1], d + 0.25))}
         flipflops={3}
@@ -114,7 +123,7 @@ export default function BeaverScene({ tier, active, isTouch, portal, canvasWrap,
       {/* No CSS blur on the portal: filtering a full-page layer every frame
           stutters the dive; the flash overlay carries the light transition. */}
       <ScreenPortalSync portal={portal} canvasWrap={canvasWrap} flash={flash} cssFilters={false} />
-      {post && <Effects />}
+      {post && <Effects lite={litePost} />}
       <FirstFrame />
       <Preload all />
     </Canvas>

@@ -20,7 +20,12 @@ import { DiveWarpEffect } from "./DiveWarpEffect";
  *   ToneMapping   ACES filmic
  *   DiveWarp      lens warp + chroma + streaks while passing through the glass
  */
-export default function Effects({ ao = false }: { ao?: boolean }) {
+/**
+ * `lite` (integrated GPUs): only the cheap, single-pass effects — vignette,
+ * tone mapping and the dive warp, so the drag-through-the-glass transition
+ * stays — without depth of field and bloom, the two costly passes.
+ */
+export default function Effects({ ao = false, lite = false }: { ao?: boolean; lite?: boolean }) {
   const dof = useRef<DepthOfFieldEffect>(null);
   const warp = useMemo(() => new DiveWarpEffect(), []);
 
@@ -35,10 +40,12 @@ export default function Effects({ ao = false }: { ao?: boolean }) {
   });
 
   return (
-    <EffectComposer multisampling={0}>
+    // Lite runs at 1× resolution with the canvas's own antialiasing off, so it
+    // smooths edges itself; the full stack's DoF/bloom soften them anyway.
+    <EffectComposer multisampling={lite ? 4 : 0}>
       <>{ao && <N8AO aoRadius={0.35} intensity={2.2} distanceFalloff={0.6} quality="medium" halfRes />}</>
-      <DepthOfField ref={dof} target={[0, 1, 0.3]} worldFocusRange={0.9} bokehScale={2.8} resolutionScale={0.5} />
-      <Bloom mipmapBlur intensity={0.42} luminanceThreshold={0.8} luminanceSmoothing={0.22} />
+      <>{!lite && <DepthOfField ref={dof} target={[0, 1, 0.3]} worldFocusRange={0.9} bokehScale={2.8} resolutionScale={0.5} />}</>
+      <>{!lite && <Bloom mipmapBlur intensity={0.42} luminanceThreshold={0.8} luminanceSmoothing={0.22} />}</>
       <Vignette offset={0.28} darkness={0.6} />
       <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
       <primitive object={warp} />

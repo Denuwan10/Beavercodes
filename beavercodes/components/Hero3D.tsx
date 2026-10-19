@@ -132,6 +132,7 @@ export default function Hero3D() {
           {profile && (
             <BeaverScene
               tier={profile.tier}
+              weakGpu={profile.weakGpu}
               isTouch={profile.isTouch}
               active={active}
               portal={portal}
