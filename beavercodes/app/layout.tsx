@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Manrope, JetBrains_Mono } from "next/font/google";
 import SmoothScroll from "@/components/SmoothScroll";
-import Cursor from "@/components/Cursor";
 import Analytics from "@/components/Analytics";
 import { SITE } from "@/utils/site";
 import "./globals.css";
@@ -64,7 +63,6 @@ export default function RootLayout({ children, modal }: { children: React.ReactN
     <html lang="en" className={`${manrope.variable} ${jetbrains.variable}`}>
       <body className="grain font-sans">
         <SmoothScroll>
-          <Cursor />
           {children}
           {modal}
         </SmoothScroll>
