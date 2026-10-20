@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import ScrubText from "./ScrubText";
+import { SITE } from "@/utils/site";
 
 const VALUES = [
   { k: "Craft", v: "Every pixel and function built with care." },
@@ -47,6 +48,9 @@ export default function About() {
         >
           <p className="text-lg leading-relaxed text-mute">
             Like nature&apos;s original engineer, we plan before we build, choose the right materials, and make things that last.
+          </p>
+          <p className="mt-4 text-lg leading-relaxed text-mute">
+            {`${SITE.name}, also written as ${SITE.alternateName}, provides web development, custom software, mobile app development and digital marketing for businesses in ${SITE.country} and worldwide.`}
           </p>
           <dl className="mt-8">
             {VALUES.map((v) => (

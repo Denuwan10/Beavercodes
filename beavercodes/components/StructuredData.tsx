@@ -20,6 +20,7 @@ export default function StructuredData() {
       "@type": "Organization",
       "@id": org,
       name: SITE.name,
+      alternateName: SITE.alternateName,
       url: absoluteUrl("/"),
       // The official mascot logo (429×256 PNG; Google needs ≥112×112).
       logo: {
@@ -71,7 +72,7 @@ export default function StructuredData() {
       "@id": website,
       url: absoluteUrl("/"),
       name: SITE.name,
-      alternateName: "Beaver Codes",
+      alternateName: SITE.alternateName,
       description: SITE.description,
       publisher: { "@id": org },
       inLanguage: "en",

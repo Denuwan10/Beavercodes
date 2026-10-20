@@ -8,7 +8,13 @@
  * the apex domain; www redirects to it (next.config.ts).
  */
 export const SITE = {
+  /** The official brand — always the primary name. */
   name: "BeaverCodes",
+  /**
+   * The one legitimate spaced form, published as schema.org `alternateName`
+   * (WebSite + Organization). Don't add misspellings here or anywhere.
+   */
+  alternateName: "Beaver Codes",
   url: (process.env.NEXT_PUBLIC_SITE_URL || "https://beavercodes.com").replace(/\/+$/, ""),
   email: "hello@beavercodes.com",
   /** WhatsApp / phone, shown as written; the link uses digits only. */
@@ -96,8 +102,16 @@ export const SITE = {
   },
 } as const;
 
+/**
+ * The verified Google Business Profile ("BeaverCodes", software company), by
+ * its permanent place ID (shared as https://maps.app.goo.gl/AuAo6pLFsZP5aoMUA).
+ * Structured data only: the business doesn't want its location shown on the
+ * website, so this is never rendered as a visible link.
+ */
+const GOOGLE_BUSINESS_PROFILE = "https://maps.google.com/maps?cid=9047106920904904352";
+
 /** Profile URLs for structured data (`sameAs`) — real profile pages only. */
-export const SAME_AS = SITE.socials.filter((s) => s.profile).map((s) => s.href);
+export const SAME_AS = [...SITE.socials.filter((s) => s.profile).map((s) => s.href), GOOGLE_BUSINESS_PROFILE];
 
 /** Markets served (structured data `areaServed`): worldwide, focus on these. */
 export const AREA_SERVED = [
